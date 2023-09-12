@@ -1,15 +1,10 @@
-# coding:utf-8
-# display
 import pygame
-import sys
 import data
-import pdb
 from control import eventControl
 from game import Game
-from pygame.locals import *
 
 
-class UI():
+class UI:
 
     def __init__(self, name):
         pygame.init()
@@ -18,6 +13,7 @@ class UI():
         self.setScreen()
         pygame.display.set_caption('西瓜棋')
         pygame.mouse.set_visible(False)
+
         self.background = pygame.image.load(data.BACKGROUND).convert()
         self.mouse_cursor = pygame.image.load(data.BLACKTILE).convert_alpha()
         self.blackTile = pygame.image.load(data.BLACKTILE).convert_alpha()
@@ -28,6 +24,7 @@ class UI():
         self.replayImage = pygame.image.load(data.REPLAY).convert_alpha()
         self.backImage = pygame.image.load(data.BACK).convert_alpha()
         self.localGameImage = pygame.image.load(data.LOCALGAME).convert_alpha()
+
         self.networkGameImage = pygame.image.load(
             data.NETWORKGAME).convert_alpha()
         self.quitImage = pygame.image.load(data.QUIT).convert_alpha()
@@ -133,7 +130,7 @@ class UI():
             data.SCREEN_WIDTH - data.CHESSMAN_WIDTH * 0.5
         y = self.game.gameMap[target][1] * \
             data.SCREEN_HEIGHT - data.CHESSMAN_HEIGHT * 1
-        return (x, y)
+        return x, y
 
 
 def main():

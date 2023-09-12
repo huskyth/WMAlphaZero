@@ -39,3 +39,8 @@ PLAYER = 2
 FONT = 'resources/font/arial.ttf'
 DISTANCEPATH = 'resources/data/distance.txt'
 MAPPATH = 'resources/data/pointPos.txt'
+
+
+LENGTH_OF_BOARD = 21
+
+

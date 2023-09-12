@@ -5,45 +5,45 @@ import data
 import pdb
 import random
 import urllib
-import urllib2
+# import urllib2
 import json
 import time
 import copy
 from pygame.locals import *
 
-
-# difficulty of the game 
+# difficulty of the game
 DEEPEST_LEVEL = 3
 
-def inRect((x, y), rect, game):
-    if rect[0][0] < x < rect[0][0] + rect[1]\
-            and rect[0][1] < y < rect[0][1] + rect[2]\
+
+def inRect(x, y, rect, game):
+    if rect[0][0] < x < rect[0][0] + rect[1] \
+            and rect[0][1] < y < rect[0][1] + rect[2] \
             and rect in game.enableButton:
         return True
     else:
         return False
 
 
-def chosenButton((x, y), game):
-    if inRect((x, y), data.LOCALGAME_RECT, game):
+def chosenButton(x, y, game):
+    if inRect(x, y, data.LOCALGAME_RECT, game):
         return 'localGame'
-    elif inRect((x, y), data.NETWORKGAME_RECT, game):
+    elif inRect(x, y, data.NETWORKGAME_RECT, game):
         return 'networkGame'
-    elif inRect((x, y), data.MENU_QUIT_RECT, game):
+    elif inRect(x, y, data.MENU_QUIT_RECT, game):
         return 'quit'
-    elif inRect((x, y), data.BACK_RECT, game):
+    elif inRect(x, y, data.BACK_RECT, game):
         return 'back'
-    elif inRect((x, y), data.REPLAY_RECT, game):
+    elif inRect(x, y, data.REPLAY_RECT, game):
         return 'replay'
-    elif inRect((x, y), data.CONFIRM_RECT, game):
+    elif inRect(x, y, data.CONFIRM_RECT, game):
         return 'confirm'
-    elif inRect((x, y), data.CANCEL_RECT, game):
+    elif inRect(x, y, data.CANCEL_RECT, game):
         return 'cancel'
     else:
         return None
 
 
-def chosenChessman((x, y), gameMap):
+def chosenChessman(x, y, gameMap):
     x, y = x / (data.SCREEN_WIDTH + 0.0), y / (data.SCREEN_HEIGHT + 0.0)
     for point in range(21):
         if abs(x - gameMap[point][0]) < 0.05 and abs(y - gameMap[point][1]) < 0.05:
@@ -240,6 +240,7 @@ def getData(game):
 def resetRoom(game):
     response = post(game.roomID, 'leave', game.name, game.url)
 
+
 # set a time interval
 
 
@@ -254,7 +255,8 @@ def checkOpponent(game):
     newPointStatus = game.pointStatus
     if clock(game):
         response = getData(game)
-        print response
+        print
+        response
         game.msg = time.ctime() + "waiting for you opponent's movement"
         game.time = time.time()
         game.turn = response['turn']
@@ -276,8 +278,8 @@ def playControl(event, game):
     button = None
     if event.type == MOUSEBUTTONDOWN:
         x, y = pygame.mouse.get_pos()
-        button = chosenButton((x, y), game)
-        chessman = chosenChessman((x, y), game.gameMap)
+        button = chosenButton(x, y, game)
+        chessman = chosenChessman(x, y, game.gameMap)
 
     if button:
         if button == 'replay':
@@ -312,7 +314,7 @@ def playControl(event, game):
                         game.chosenChessman = chessman
                         game.msg = 'Chessman was chose'
                 else:
-                    if game.pointStatus[chessman] == 0 and\
+                    if game.pointStatus[chessman] == 0 and \
                             game.distance[game.chosenChessman][chessman] == 1:
                         game.pointStatus[chessman] = game.chosenChessmanColor
                         game.msg = 'Chessman was moved'
@@ -383,7 +385,7 @@ def playControl(event, game):
 def menuControl(event, game):
     if event.type == MOUSEBUTTONDOWN:
         x, y = pygame.mouse.get_pos()
-        button = chosenButton((x, y), game)
+        button = chosenButton(x, y, game)
         if button == 'localGame':
             game.resetGame()
             game.status = 'play'
@@ -399,7 +401,7 @@ def menuControl(event, game):
             # pdb.set_trace()
             game = initNetworkGame(game)
             game.msg = time.ctime() + '  enter room: ' + game.roomID + \
-                ' get name: ' + game.name
+                       ' get name: ' + game.name
             game.time = time.time()
             game.enableButton = [data.BACK_RECT, data.REPLAY_RECT]
 
@@ -414,7 +416,7 @@ def menuControl(event, game):
 def queryControl(event, game):
     if event.type == MOUSEBUTTONDOWN:
         x, y = pygame.mouse.get_pos()
-        button = chosenButton((x, y), game)
+        button = chosenButton(x, y, game)
         if button == 'confirm':
             game.resetGame()
             game.status = game.nextStatus

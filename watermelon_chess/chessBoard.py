@@ -34,8 +34,8 @@ class ChessBoard():
         try:
             f = open(data.DISTANCEPATH, 'rb')
             self.distance = json.loads(f.read())
-        except Exception, e:
-            print 'file open error', e
+        except:
+            print ('file open error')
         finally:
             f.close()
 
@@ -59,7 +59,7 @@ class ChessBoard():
             f = open(data.MAPPATH, 'rb')
             pointPos = json.loads(f.read())
             self.gameMap = pointPos
-        except Exception, e:
-            print 'file open error', e
+        except :
+            print ('file open error')
         finally:
             f.close()

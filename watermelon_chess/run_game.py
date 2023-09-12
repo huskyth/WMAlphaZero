@@ -14,6 +14,8 @@ class UI:
         pygame.display.set_caption('西瓜棋')
         pygame.mouse.set_visible(False)
 
+        self.temp_move = []
+
         self.background = pygame.image.load(data.BACKGROUND).convert()
         self.mouse_cursor = pygame.image.load(data.BLACKTILE).convert_alpha()
         self.blackTile = pygame.image.load(data.BLACKTILE).convert_alpha()
@@ -74,7 +76,8 @@ class UI:
                     'turn:' + str(self.game.turn),
                     'room:' + str(self.game.roomID),
                     "'q' to quit",
-                    "'f' to fullscreen"]
+                    "'f' to fullscreen",
+                    ]
         sideY = 5
         for text in sideText:
             self.sideSurface = self.msgFont.render(

@@ -306,7 +306,7 @@ def playControl(event, game):
         elif game.turn == game.name:
             game.msg = "it's your turn to move with " + color
             if chessman != None:
-                if game.chessmanInHand == False:
+                if not game.chessmanInHand:
                     if game.pointStatus[chessman] == game.playerColor:
                         game.chosenChessmanColor = game.pointStatus[chessman]
                         game.pointStatus[chessman] = 0
@@ -339,8 +339,8 @@ def playControl(event, game):
         elif game.turn == 'computer':
             if event.type == MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                button = chosenButton((x, y), game)
-                chessman = chosenChessman((x, y), game.gameMap)
+                button = chosenButton(x, y, game)
+                chessman = chosenChessman(x, y, game.gameMap)
                 if button == 'replay':
                     game.status = 'query'
                     game = setQuery(game, 'play', 'play', 'Reset the game?')

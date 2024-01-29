@@ -2,6 +2,7 @@ from Game import Game
 import numpy as np
 
 from watermelon_chess.alpha_zero_board import WMBoard
+from watermelon_chess.data import LENGTH_OF_BOARD
 
 
 class WMGame(Game):
@@ -15,7 +16,7 @@ class WMGame(Game):
         return np.array(b.pointStatus)
 
     def getBoardSize(self):
-        return self.n
+        return LENGTH_OF_BOARD
 
     def getActionSize(self):
         # return number of actions

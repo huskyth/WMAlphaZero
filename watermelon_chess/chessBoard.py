@@ -41,7 +41,7 @@ class ChessBoard:
         self.pointStatus = []
         black = [0, 1, 2, 3, 4, 8]
         white = [7, 11, 12, 13, 14, 15]
-        for x in range(21):
+        for x in range(data.LENGTH_OF_BOARD):
             self.pointStatus.append(0)
         for x in black:
             self.pointStatus[x] = data.BLACK

@@ -1,7 +1,7 @@
 import pygame
 import data
 from control import eventControl
-from game import Game
+from watermelon_chess.game import Game
 
 
 class UI:

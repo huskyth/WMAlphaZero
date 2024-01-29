@@ -13,9 +13,7 @@ class ChessBoard:
         self.distance = []
         self.status = None
         self.whiteNum = 6
-        # self.whiteChessmen = chessman(WHITE)[6]
         self.blackNum = 6
-        # self.blackChessmen = chessman(BLACK)[6]
         self.msg = None
         self.initDistance()
         self.initPointStatus()
@@ -67,20 +65,8 @@ class ChessBoard:
 
 class WMBoard(ChessBoard):
 
-    def __init__(self, n):
-        "Set up initial board configuration."
-
-        self.n = n
-        # Create the empty board array.
-        self.pieces = [None] * self.n
-        for i in range(self.n):
-            self.pieces[i] = [0] * self.n
-
-        # Set up the initial 4 pieces.
-        self.pieces[int(self.n / 2) - 1][int(self.n / 2)] = 1
-        self.pieces[int(self.n / 2)][int(self.n / 2) - 1] = 1
-        self.pieces[int(self.n / 2) - 1][int(self.n / 2) - 1] = -1;
-        self.pieces[int(self.n / 2)][int(self.n / 2)] = -1;
+    def __init__(self):
+        pass
 
     # add [][] indexer syntax to the Board
     def __getitem__(self, index):

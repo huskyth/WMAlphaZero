@@ -4,7 +4,7 @@ from watermelon_chess.chessBoard import ChessBoard
 class WMBoard(ChessBoard):
 
     def __init__(self):
-        pass
+        super().__init__()
 
     # add [][] indexer syntax to the Board
     def __getitem__(self, index):

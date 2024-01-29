@@ -1,6 +1,7 @@
 from Game import Game
-from watermelon_chess.chessBoard import WMBoard
 import numpy as np
+
+from watermelon_chess.alpha_zero_board import WMBoard
 
 
 class WMGame(Game):
@@ -11,7 +12,7 @@ class WMGame(Game):
 
     def getInitBoard(self):
         b = WMBoard()
-        return np.array(b.pieces)
+        return np.array(b.pointStatus)
 
     def getBoardSize(self):
         return self.n

@@ -110,14 +110,14 @@ class UI:
         for index, point in enumerate(self.game.pointStatus):
             if point != 0:
                 (x, y) = self.fixXY(index)
-                if point == 1:
+                if point == data.BLACK:
                     self.screen.blit(self.blackTile, (x, y))
-                elif point == 2:
+                elif point == data.WHITE:
                     self.screen.blit(self.whiteTile, (x, y))
                 else:
                     self.game.msg = 'pointPos error'
         if self.game.chessmanInHand:
-            if self.game.chosenChessmanColor == 1:
+            if self.game.chosenChessmanColor == data.BLACK:
                 self.screen.blit(self.blackTile, (self.handX, self.handY))
             else:
                 self.screen.blit(self.whiteTile, (self.handX, self.handY))

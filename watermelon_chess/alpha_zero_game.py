@@ -21,16 +21,11 @@ class WMGame(Game):
     def getActionSize(self):
         return LENGTH_OF_BOARD
 
-    def getNextState(self, board, player, action):
-        # if player takes action on board, return next (board,player)
-        # action must be a valid move
-        if action == self.n * self.n:
-            return (board, -player)
-        b = Board(self.n)
-        b.pieces = np.copy(board)
-        move = (int(action / self.n), action % self.n)
-        b.execute_move(move, player)
-        return (b.pieces, -player)
+    def getNextState(self, point_status, player, action):
+        b = WMBoard()
+        b.pointStatus = np.copy(point_status)
+        b.execute_move(action, player)
+        return b.pointStatus, -player
 
     def getValidMoves(self, board, player):
         # return a fixed size binary vector
@@ -110,4 +105,6 @@ class WMGame(Game):
 
 if __name__ == '__main__':
     wm_ame = WMGame()
-    wm_ame.getInitBoard()
+    test_point = wm_ame.getInitBoard()
+    point = wm_ame.getNextState(test_point, 1, (2, 20))
+    print(point)

@@ -39,18 +39,13 @@ class WMGame(Game):
             valids[idx] = 1
         return np.array(valids)
 
-    def getGameEnded(self, board, player):
-        # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
-        # player = 1
-        b = Board(self.n)
-        b.pieces = np.copy(board)
-        if b.has_legal_moves(player):
+    def getGameEnded(self, point_status, player):
+        b = WMBoard()
+        b.pointStatus = np.copy(point_status)
+        winner = b.check_winner()
+        if winner is None:
             return 0
-        if b.has_legal_moves(-player):
-            return 0
-        if b.countDiff(player) > 0:
-            return 1
-        return -1
+        return 1 if winner == player else -1
 
     def getCanonicalForm(self, board, player):
         # return state if player==1, else return -state if player==-1
@@ -106,5 +101,7 @@ if __name__ == '__main__':
     wm_ame = WMGame()
     test_point = wm_ame.getInitBoard()
     # point = wm_ame.getNextState(test_point, 1, (2, 20))
-    legal_moves = wm_ame.getValidMoves(test_point, -1)
-    print(legal_moves)
+    # legal_moves = wm_ame.getValidMoves(test_point, -1)
+    test_point[0:4] = 0
+    print(test_point)
+    print(wm_ame.getGameEnded(test_point, -1))

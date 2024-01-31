@@ -1,5 +1,6 @@
 import copy
 
+from watermelon_chess import data
 from watermelon_chess.chessBoard import ChessBoard
 from watermelon_chess.control import shiftOutChessman, getNeighboors
 from watermelon_chess.data import BLACK, WHITE
@@ -36,6 +37,23 @@ class WMBoard(ChessBoard):
                     continue
                 legal_moves_list.append((from_point_idx, to_point_idx))
         return legal_moves_list
+
+    def check_winner(self):
+        black_num = 0
+        white_num = 0
+        winner = None
+        for color in self.pointStatus:
+            if color == data.BLACK:
+                black_num += 1
+            elif color == data.WHITE:
+                white_num += 1
+        if black_num < 3 or white_num < 3:
+            if black_num < 3:
+                winner = data.WHITE
+            else:
+                winner = data.BLACK
+
+        return winner
 
 
 if __name__ == '__main__':

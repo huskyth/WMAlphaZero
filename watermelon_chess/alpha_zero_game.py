@@ -19,7 +19,7 @@ class WMGame(Game):
         return LENGTH_OF_BOARD
 
     def getActionSize(self):
-        return LENGTH_OF_BOARD
+        return LENGTH_OF_BOARD ** 2
 
     def getNextState(self, point_status, player, action):
         b = WMBoard()
@@ -27,17 +27,15 @@ class WMGame(Game):
         b.execute_move(action, player)
         return b.pointStatus, -player
 
-    def getValidMoves(self, board, player):
-        # return a fixed size binary vector
+    def getValidMoves(self, point_status, player):
+        # TODO://压缩一下空间，因为邻接点固定，还没想好，可以使用固定的映射，这个方法没测试
         valids = [0] * self.getActionSize()
-        b = Board(self.n)
-        b.pieces = np.copy(board)
-        legalMoves = b.get_legal_moves(player)
-        if len(legalMoves) == 0:
-            valids[-1] = 1
-            return np.array(valids)
-        for x, y in legalMoves:
-            valids[self.n * x + y] = 1
+        b = WMBoard()
+        b.pointStatus = np.copy(point_status)
+
+        legal_moves_list = b.get_legal_moves(player)
+        for x, y in legal_moves_list:
+            valids[LENGTH_OF_BOARD * x + y] = 1
         return np.array(valids)
 
     def getGameEnded(self, board, player):
@@ -106,5 +104,6 @@ class WMGame(Game):
 if __name__ == '__main__':
     wm_ame = WMGame()
     test_point = wm_ame.getInitBoard()
-    point = wm_ame.getNextState(test_point, 1, (2, 20))
-    print(point)
+    # point = wm_ame.getNextState(test_point, 1, (2, 20))
+    legal_moves = wm_ame.getValidMoves(test_point, 1)
+    print(legal_moves)

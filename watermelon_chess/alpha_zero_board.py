@@ -1,7 +1,7 @@
 import copy
 
 from watermelon_chess.chessBoard import ChessBoard
-from watermelon_chess.control import shiftOutChessman
+from watermelon_chess.control import shiftOutChessman, getNeighboors
 from watermelon_chess.data import BLACK, WHITE
 
 
@@ -22,3 +22,17 @@ class WMBoard(ChessBoard):
         bake_point_status = copy.deepcopy(self.pointStatus)
         self.pointStatus = shiftOutChessman(
             bake_point_status, self.distance)
+
+    def get_legal_moves(self, player):
+        assert player in [WHITE, BLACK]
+        legal_moves_list = []
+        for from_point, chessman in enumerate(self.pointStatus):
+            if chessman == player:
+                to_point_list = getNeighboors(from_point, self.distance)
+                for to_point in to_point_list:
+                    legal_moves_list.append((from_point, to_point))
+        return legal_moves_list
+
+
+if __name__ == '__main__':
+    WMBoard().get_legal_moves()

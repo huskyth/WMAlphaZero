@@ -2,6 +2,7 @@ from Game import Game
 import numpy as np
 
 from watermelon_chess.alpha_zero_board import WMBoard
+from watermelon_chess.common import MOVE_TO_INDEX_DICT
 from watermelon_chess.data import LENGTH_OF_BOARD
 
 
@@ -19,7 +20,7 @@ class WMGame(Game):
         return LENGTH_OF_BOARD
 
     def getActionSize(self):
-        return LENGTH_OF_BOARD ** 2
+        return len(MOVE_TO_INDEX_DICT)
 
     def getNextState(self, point_status, player, action):
         b = WMBoard()

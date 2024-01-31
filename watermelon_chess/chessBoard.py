@@ -1,10 +1,7 @@
-# coding:utf-8
-# class of chessboard
-# from chessman import chessman
 import data
 import json
 
-from watermelon_chess.common import get_distance, DISTANCE
+from watermelon_chess.common import DISTANCE
 
 
 class ChessBoard:

@@ -4,6 +4,8 @@
 import data
 import json
 
+from watermelon_chess.common import get_distance, DISTANCE
+
 
 class ChessBoard:
 
@@ -29,13 +31,7 @@ class ChessBoard:
         return self.distance
 
     def initDistance(self):
-        try:
-            f = open(data.DISTANCEPATH, 'rb')
-            self.distance = json.loads(f.read())
-        except:
-            print('file open error')
-        finally:
-            f.close()
+        self.distance = DISTANCE
 
     def initPointStatus(self):
         self.pointStatus = []

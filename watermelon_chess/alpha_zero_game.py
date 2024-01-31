@@ -29,14 +29,14 @@ class WMGame(Game):
         return b.pointStatus, -player
 
     def getValidMoves(self, point_status, player):
-        # TODO://压缩一下空间，因为邻接点固定，还没想好，可以使用固定的映射，这个方法没测试
         valids = [0] * self.getActionSize()
         b = WMBoard()
         b.pointStatus = np.copy(point_status)
 
         legal_moves_list = b.get_legal_moves(player)
-        for x, y in legal_moves_list:
-            valids[LENGTH_OF_BOARD * x + y] = 1
+        for move_tuple in legal_moves_list:
+            idx = MOVE_TO_INDEX_DICT[move_tuple]
+            valids[idx] = 1
         return np.array(valids)
 
     def getGameEnded(self, board, player):
@@ -106,5 +106,5 @@ if __name__ == '__main__':
     wm_ame = WMGame()
     test_point = wm_ame.getInitBoard()
     # point = wm_ame.getNextState(test_point, 1, (2, 20))
-    legal_moves = wm_ame.getValidMoves(test_point, 1)
+    legal_moves = wm_ame.getValidMoves(test_point, -1)
     print(legal_moves)

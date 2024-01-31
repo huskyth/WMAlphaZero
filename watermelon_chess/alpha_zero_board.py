@@ -26,11 +26,15 @@ class WMBoard(ChessBoard):
     def get_legal_moves(self, player):
         assert player in [WHITE, BLACK]
         legal_moves_list = []
-        for from_point, chessman in enumerate(self.pointStatus):
-            if chessman == player:
-                to_point_list = getNeighboors(from_point, self.distance)
-                for to_point in to_point_list:
-                    legal_moves_list.append((from_point, to_point))
+        for from_point_idx, chessman in enumerate(self.pointStatus):
+            if chessman != player:
+                continue
+            to_point_idx_list = getNeighboors(from_point_idx, self.distance)
+            for to_point_idx in to_point_idx_list:
+                to_point = self.pointStatus[to_point_idx]
+                if to_point != 0:
+                    continue
+                legal_moves_list.append((from_point_idx, to_point_idx))
         return legal_moves_list
 
 

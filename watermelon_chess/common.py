@@ -1,4 +1,5 @@
 import json
+import os
 
 import numpy
 import torch
@@ -53,3 +54,8 @@ def from_array_to_input_tensor(numpy_array):
         row, column = ARRAY_TO_IMAGE[i]
         input_tensor[row, column] = chessman
     return input_tensor
+
+
+def create_directory(path):
+    if not os.path.exists(str(path)):
+        os.mkdir(str(path))

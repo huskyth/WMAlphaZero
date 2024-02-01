@@ -10,11 +10,13 @@ from tqdm import tqdm
 
 from Arena import Arena
 from MCTS import MCTS
+from watermelon_chess.tensor_board_tool import MySummary
 
 log = logging.getLogger(__name__)
+my_summary = MySummary()
 
 
-class Coach():
+class Coach:
     """
     This class executes the self-play + learning. It uses the functions defined
     in Game and NeuralNet. args are specified in main.py.
@@ -117,9 +119,15 @@ class Coach():
             arena = Arena(lambda x: np.argmax(pmcts.getActionProb(x, temp=0)),
                           lambda x: np.argmax(nmcts.getActionProb(x, temp=0)), self.game)
             pwins, nwins, draws = arena.playGames(self.args.arenaCompare)
+            my_summary.add_float(x=i, y=i, title="Epoch", x_name="epoch")
+            my_summary.add_float(x=i, y=nwins, title="New Wins", x_name="epoch")
+            my_summary.add_float(x=i, y=pwins, title="PREV Wins", x_name="epoch")
+            my_summary.add_float(x=i, y=draws, title="Draws", x_name="epoch")
+            win_rate = float(nwins) / (pwins + nwins)
+            my_summary.add_float(x=i, y=win_rate, title="Win Rate", x_name="epoch")
 
             log.info('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwins, pwins, draws))
-            if pwins + nwins == 0 or float(nwins) / (pwins + nwins) < self.args.updateThreshold:
+            if pwins + nwins == 0 or win_rate < self.args.updateThreshold:
                 log.info('REJECTING NEW MODEL')
                 self.nnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             else:

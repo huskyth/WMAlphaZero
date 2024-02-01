@@ -1,6 +1,7 @@
 import json
 
 import numpy
+import torch
 
 from watermelon_chess import data
 from watermelon_chess.control import getNeighboors
@@ -46,3 +47,8 @@ ARRAY_TO_IMAGE = {
 def from_array_to_input_tensor(numpy_array):
     assert len(numpy_array) == 21
     assert isinstance(numpy_array, numpy.ndarray)
+    input_tensor = torch.zeros((7, 7))
+    for i, chessman in enumerate(numpy_array):
+        row, column = ARRAY_TO_IMAGE[i]
+        input_tensor[row, column] = chessman
+    return input_tensor

@@ -2,7 +2,7 @@ from Game import Game
 import numpy as np
 
 from watermelon_chess.alpha_zero_board import WMBoard
-from watermelon_chess.common import MOVE_TO_INDEX_DICT
+from watermelon_chess.common import MOVE_TO_INDEX_DICT, from_array_to_input_tensor
 from watermelon_chess.data import LENGTH_OF_BOARD
 
 
@@ -70,6 +70,7 @@ class WMGame(Game):
 if __name__ == '__main__':
     wm_ame = WMGame()
     test_point = wm_ame.getInitBoard()
-    # point = wm_ame.getNextState(test_point, 1, (2, 20))
-    legal_moves = wm_ame.getValidMoves(test_point, -1)
-    print(legal_moves)
+    point, player = wm_ame.getNextState(test_point, 1, (2, 16))
+    # legal_moves = wm_ame.getValidMoves(test_point, -1)
+    x = from_array_to_input_tensor(point)
+    print(x)

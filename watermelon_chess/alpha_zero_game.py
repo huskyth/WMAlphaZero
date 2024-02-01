@@ -52,9 +52,8 @@ class WMGame(Game):
             return 1
         return -1
 
-    def getCanonicalForm(self, board, player):
-        # return state if player==1, else return -state if player==-1
-        return player * board
+    def getCanonicalForm(self, point_status, player):
+        return player * point_status
 
     def getSymmetries(self, board, pi):
         # mirror, rotational

@@ -57,6 +57,7 @@ class WMGame(Game):
 
     def getSymmetries(self, board, pi):
         # TODO://可以是左右翻转、上下、左右同时上下
+        # 此方法暂时不实现，不一定要使用，实现较为复杂
         return None
 
     def stringRepresentation(self, point_status):

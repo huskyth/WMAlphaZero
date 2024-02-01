@@ -23,6 +23,7 @@ DISTANCE = get_distance()
 MOVE_TO_INDEX_DICT = {}
 INDEX_TO_MOVE_DICT = {}
 MOVE_LIST = []
+# MOVE_LIST从小到大排列
 for from_point in range(21):
     to_point_list = getNeighboors(from_point, DISTANCE)
     to_point_list = sorted(to_point_list)

@@ -1,9 +1,8 @@
 import copy
 
-from watermelon_chess import data
 from watermelon_chess.chessBoard import ChessBoard
+from watermelon_chess.common import *
 from watermelon_chess.control import shiftOutChessman, getNeighboors
-from watermelon_chess.data import BLACK, WHITE
 
 
 class WMBoard(ChessBoard):
@@ -43,15 +42,15 @@ class WMBoard(ChessBoard):
         white_num = 0
         winner = None
         for color in self.pointStatus:
-            if color == data.BLACK:
+            if color == BLACK:
                 black_num += 1
-            elif color == data.WHITE:
+            elif color == WHITE:
                 white_num += 1
         if black_num < 3 or white_num < 3:
             if black_num < 3:
-                winner = data.WHITE
+                winner = WHITE
             else:
-                winner = data.BLACK
+                winner = BLACK
 
         return winner
 

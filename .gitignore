@@ -11,3 +11,5 @@ checkpoints/
 # For PyCharm users
 .idea/
 
+/wandb_log
+/summary_log

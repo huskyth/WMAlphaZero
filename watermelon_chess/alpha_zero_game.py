@@ -2,8 +2,7 @@ from Game import Game
 import numpy as np
 
 from watermelon_chess.alpha_zero_board import WMBoard
-from watermelon_chess.common import MOVE_TO_INDEX_DICT
-from watermelon_chess.data import LENGTH_OF_BOARD
+from watermelon_chess.common import MOVE_TO_INDEX_DICT, from_array_to_input_tensor, LENGTH_OF_BOARD
 
 
 class WMGame(Game):
@@ -47,54 +46,20 @@ class WMGame(Game):
             return 0
         return 1 if winner == player else -1
 
-    def getCanonicalForm(self, board, player):
-        # return state if player==1, else return -state if player==-1
-        return player * board
+    def getCanonicalForm(self, point_status, player):
+        return player * point_status
 
     def getSymmetries(self, board, pi):
-        # mirror, rotational
-        assert (len(pi) == self.n ** 2 + 1)  # 1 for pass
-        pi_board = np.reshape(pi[:-1], (self.n, self.n))
-        l = []
+        # TODO://可以是左右翻转、上下、左右同时上下
+        # 此方法暂时不实现，不一定要使用，实现较为复杂
+        return None
 
-        for i in range(1, 5):
-            for j in [True, False]:
-                newB = np.rot90(board, i)
-                newPi = np.rot90(pi_board, i)
-                if j:
-                    newB = np.fliplr(newB)
-                    newPi = np.fliplr(newPi)
-                l += [(newB, list(newPi.ravel()) + [pi[-1]])]
-        return l
-
-    def stringRepresentation(self, board):
-        return board.tostring()
-
-    def stringRepresentationReadable(self, board):
-        board_s = "".join(self.square_content[square] for row in board for square in row)
-        return board_s
-
-    def getScore(self, board, player):
-        b = Board(self.n)
-        b.pieces = np.copy(board)
-        return b.countDiff(player)
+    def stringRepresentation(self, point_status):
+        return point_status.tostring()
 
     @staticmethod
     def display(board):
-        n = board.shape[0]
-        print("   ", end="")
-        for y in range(n):
-            print(y, end=" ")
-        print("")
-        print("-----------------------")
-        for y in range(n):
-            print(y, "|", end="")  # print the row #
-            for x in range(n):
-                piece = board[y][x]  # get the piece to print
-                print(OthelloGame.square_content[piece], end=" ")
-            print("|")
-
-        print("-----------------------")
+        pass
 
 
 if __name__ == '__main__':

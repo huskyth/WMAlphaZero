@@ -1,5 +1,5 @@
 from chessBoard import *
-from watermelon_chess.data import *
+from watermelon_chess.common import *
 
 
 class Game:
@@ -47,5 +47,3 @@ class Game:
         else:
             color = 'WHITE'
         return color
-
-

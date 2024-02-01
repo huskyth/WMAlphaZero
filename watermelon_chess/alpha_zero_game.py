@@ -71,8 +71,8 @@ class WMGame(Game):
                 l += [(newB, list(newPi.ravel()) + [pi[-1]])]
         return l
 
-    def stringRepresentation(self, board):
-        return board.tostring()
+    def stringRepresentation(self, point_status):
+        return point_status.tostring()
 
     def stringRepresentationReadable(self, board):
         board_s = "".join(self.square_content[square] for row in board for square in row)

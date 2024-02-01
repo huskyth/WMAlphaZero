@@ -56,49 +56,15 @@ class WMGame(Game):
         return player * point_status
 
     def getSymmetries(self, board, pi):
-        # mirror, rotational
-        assert (len(pi) == self.n ** 2 + 1)  # 1 for pass
-        pi_board = np.reshape(pi[:-1], (self.n, self.n))
-        l = []
-
-        for i in range(1, 5):
-            for j in [True, False]:
-                newB = np.rot90(board, i)
-                newPi = np.rot90(pi_board, i)
-                if j:
-                    newB = np.fliplr(newB)
-                    newPi = np.fliplr(newPi)
-                l += [(newB, list(newPi.ravel()) + [pi[-1]])]
-        return l
+        # TODO://可以是左右翻转、上下、左右同时上下
+        return None
 
     def stringRepresentation(self, point_status):
         return point_status.tostring()
 
-    def stringRepresentationReadable(self, board):
-        board_s = "".join(self.square_content[square] for row in board for square in row)
-        return board_s
-
-    def getScore(self, board, player):
-        b = Board(self.n)
-        b.pieces = np.copy(board)
-        return b.countDiff(player)
-
     @staticmethod
     def display(board):
-        n = board.shape[0]
-        print("   ", end="")
-        for y in range(n):
-            print(y, end=" ")
-        print("")
-        print("-----------------------")
-        for y in range(n):
-            print(y, "|", end="")  # print the row #
-            for x in range(n):
-                piece = board[y][x]  # get the piece to print
-                print(OthelloGame.square_content[piece], end=" ")
-            print("|")
-
-        print("-----------------------")
+        pass
 
 
 if __name__ == '__main__':

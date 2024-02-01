@@ -4,13 +4,55 @@ import os
 import numpy
 import torch
 
-from watermelon_chess import data
 from watermelon_chess.control import getNeighboors
+from pathlib import Path
+
+MENU = 'resources/images/menu.png'
+BACKGROUND = 'resources/images/watermelon.png'
+QUERY_BKG = 'resources/images/queryBkg.png'
+BLACKTILE = 'resources/images/black.png'
+WHITETILE = 'resources/images/white.png'
+HAND = 'resources/images/hand.png'
+START = 'resources/images/start.png'
+CONGRATULATION = 'resources/images/congratulation.png'
+PITY = 'resources/images/pity.png'
+BACK = 'resources/images/back.png'
+BACK_RECT = ((460, 400), 117, 50)
+REPLAY = 'resources/images/replay.png'
+REPLAY_RECT = ((460, 300), 117, 50)
+LOCALGAME = 'resources/images/localGame.png'
+LOCALGAME_RECT = ((232, 200), 117, 50)
+NETWORKGAME = 'resources/images/networkGame.png'
+NETWORKGAME_RECT = ((232, 300), 117, 50)
+QUIT = 'resources/images/quit.png'
+MENU_QUIT_RECT = ((232, 400), 117, 50)
+PLAY_QUIT_RECT = ((460, 400), 117, 50)
+CONFIRM = 'resources/images/confirm.png'
+CONFIRM_RECT = ((173, 400), 80, 49)
+CANCEL = 'resources/images/cancel.png'
+CANCEL_RECT = ((291, 400), 80, 49)
+
+SCREEN_WIDTH = 580
+SCREEN_HEIGHT = 580
+FULLSCREENMOD = False
+CHESSMAN_WIDTH = 20
+CHESSMAN_HEIGHT = 20
+BLACK = 1
+WHITE = -1
+COMPUTER = 1
+PLAYER = 2
+
+LENGTH_OF_BOARD = 21
+
+ROOT_PATH = Path(os.path.abspath(__file__)).parent.parent
+DISTANCEPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/distance.txt')
+FONT = str(ROOT_PATH / 'watermelon_chess/resources/font/arial.ttf')
+MAPPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/pointPos.txt')
 
 
 def get_distance():
     try:
-        f = open(data.DISTANCEPATH, 'rb')
+        f = open(DISTANCEPATH, 'rb')
         distance = json.loads(f.read())
         return distance
     except Exception as e:

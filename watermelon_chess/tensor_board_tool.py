@@ -1,12 +1,10 @@
 import os
 import time
-from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
 import wandb
 
-from common import create_directory
+from watermelon_chess.common import create_directory, ROOT_PATH
 
-ROOT_PATH = Path(os.path.abspath(__file__)).parent.parent
 WANDB_PATH = ROOT_PATH / "wandb_log"
 SUMMARY_PATH = ROOT_PATH / "summary_log"
 create_directory(WANDB_PATH)

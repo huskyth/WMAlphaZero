@@ -1,11 +1,5 @@
-# coding:utf-8
-# class of control
 import pygame
-import data
-import pdb
-import random
 import urllib
-# import urllib2
 import json
 import time
 import copy

@@ -1,7 +1,4 @@
-import data
-import json
-
-from watermelon_chess.common import DISTANCE
+from watermelon_chess.common import *
 
 
 class ChessBoard:
@@ -34,12 +31,12 @@ class ChessBoard:
         self.pointStatus = []
         black = [0, 1, 2, 3, 4, 8]
         white = [7, 11, 12, 13, 14, 15]
-        for x in range(data.LENGTH_OF_BOARD):
+        for x in range(LENGTH_OF_BOARD):
             self.pointStatus.append(0)
         for x in black:
-            self.pointStatus[x] = data.BLACK
+            self.pointStatus[x] = BLACK
         for x in white:
-            self.pointStatus[x] = data.WHITE
+            self.pointStatus[x] = WHITE
 
     def initChessmanNum(self):
         self.whiteNum = 6
@@ -47,7 +44,7 @@ class ChessBoard:
 
     def initGameMap(self):
         try:
-            f = open(data.MAPPATH, 'rb')
+            f = open(MAPPATH, 'rb')
             pointPos = json.loads(f.read())
             self.gameMap = pointPos
         except:

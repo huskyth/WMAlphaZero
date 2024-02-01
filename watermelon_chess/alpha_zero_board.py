@@ -1,8 +1,8 @@
 import copy
 
 from watermelon_chess.chessBoard import ChessBoard
+from watermelon_chess.common import *
 from watermelon_chess.control import shiftOutChessman, getNeighboors
-from watermelon_chess.data import BLACK, WHITE
 
 
 class WMBoard(ChessBoard):

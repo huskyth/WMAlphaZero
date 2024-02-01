@@ -2,8 +2,7 @@ from Game import Game
 import numpy as np
 
 from watermelon_chess.alpha_zero_board import WMBoard
-from watermelon_chess.common import MOVE_TO_INDEX_DICT, from_array_to_input_tensor
-from watermelon_chess.data import LENGTH_OF_BOARD
+from watermelon_chess.common import MOVE_TO_INDEX_DICT, from_array_to_input_tensor, LENGTH_OF_BOARD
 
 
 class WMGame(Game):

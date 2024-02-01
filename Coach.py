@@ -13,7 +13,7 @@ from MCTS import MCTS
 from watermelon_chess.tensor_board_tool import MySummary
 
 log = logging.getLogger(__name__)
-my_summary = MySummary()
+my_summary = MySummary(use_wandb=False)
 
 
 class Coach:

@@ -5,6 +5,8 @@ import time
 import copy
 from pygame.locals import *
 
+from watermelon_chess.common import *
+
 # difficulty of the game
 DEEPEST_LEVEL = 3
 
@@ -19,26 +21,26 @@ def inRect(x, y, rect, game):
 
 
 def chosenButton(x, y, game):
-    if inRect(x, y, data.LOCALGAME_RECT, game):
+    if inRect(x, y, LOCALGAME_RECT, game):
         return 'localGame'
-    elif inRect(x, y, data.NETWORKGAME_RECT, game):
+    elif inRect(x, y, NETWORKGAME_RECT, game):
         return 'networkGame'
-    elif inRect(x, y, data.MENU_QUIT_RECT, game):
+    elif inRect(x, y, MENU_QUIT_RECT, game):
         return 'quit'
-    elif inRect(x, y, data.BACK_RECT, game):
+    elif inRect(x, y, BACK_RECT, game):
         return 'back'
-    elif inRect(x, y, data.REPLAY_RECT, game):
+    elif inRect(x, y, REPLAY_RECT, game):
         return 'replay'
-    elif inRect(x, y, data.CONFIRM_RECT, game):
+    elif inRect(x, y, CONFIRM_RECT, game):
         return 'confirm'
-    elif inRect(x, y, data.CANCEL_RECT, game):
+    elif inRect(x, y, CANCEL_RECT, game):
         return 'cancel'
     else:
         return None
 
 
 def chosenChessman(x, y, gameMap):
-    x, y = x / (data.SCREEN_WIDTH + 0.0), y / (data.SCREEN_HEIGHT + 0.0)
+    x, y = x / (SCREEN_WIDTH + 0.0), y / (SCREEN_HEIGHT + 0.0)
     for point in range(21):
         if abs(x - gameMap[point][0]) < 0.05 and abs(y - gameMap[point][1]) < 0.05:
             return point
@@ -56,7 +58,7 @@ def getNeighboors(chessman, distance):
 def getScore(pointStatus, distance):
     score = 0
     scoreLevel = [1, 2, 4, 6]
-    black = [x for x in distance if x == data.BLACK]
+    black = [x for x in distance if x == BLACK]
     # if chessman was eaten, sub 8 score for each one
     score -= 8 * (6 - len(black))
     for chessman, color in enumerate(pointStatus):
@@ -65,20 +67,20 @@ def getScore(pointStatus, distance):
         neighboors = getNeighboors(chessman, distance)
         for eachNeighboor in neighboors:
             # computer use black chessman as default
-            if pointStatus[eachNeighboor] == data.BLACK and color == data.WHITE:
+            if pointStatus[eachNeighboor] == BLACK and color == WHITE:
                 advantg += 1
                 score += scoreLevel[advantg - 1]
-            elif pointStatus[eachNeighboor] == data.WHITE and color == data.BLACK:
+            elif pointStatus[eachNeighboor] == WHITE and color == BLACK:
                 disadvtg += 1
                 score -= scoreLevel[disadvtg - 1]
             else:
                 pass
             # unnecessary
             '''
-            elif color == data.WHITE:
-                if pointStatus[eachNeighboor] == data.BLACK:
+            elif color == WHITE:
+                if pointStatus[eachNeighboor] == BLACK:
                     score += 2
-                elif pointStatus[eachNeighboor] == data.WHITE:
+                elif pointStatus[eachNeighboor] == WHITE:
                     score -= 2
             '''
     return score
@@ -91,11 +93,11 @@ def computerMove(pointStatus, distance, level):
     # for convenient, set color = computer color (black) when enter the
     # function firstly
     if level % 2 == 1:
-        selfColor = data.BLACK
-        opponentColor = data.WHITE
+        selfColor = BLACK
+        opponentColor = WHITE
     else:
-        selfColor = data.WHITE
-        opponentColor = data.WHITE
+        selfColor = WHITE
+        opponentColor = WHITE
     # In the deepest level, the best move is itself, replace it with None
     if level > DEEPEST_LEVEL:
         score = getScore(pointStatus, distance)
@@ -128,17 +130,17 @@ def checkWinner(game):
     game.chessBoard.blackNum = 0
     game.chessBoard.whiteNum = 0
     for color in game.pointStatus:
-        if color == data.BLACK:
+        if color == BLACK:
             game.chessBoard.blackNum += 1
-        elif color == data.WHITE:
+        elif color == WHITE:
             game.chessBoard.whiteNum += 1
     if game.chessBoard.blackNum < 3 or game.chessBoard.whiteNum < 3:
         game.status = 'query'
         game.over = True
         if game.chessBoard.blackNum < 3:
-            winner = data.WHITE
+            winner = WHITE
         else:
-            winner = data.BLACK
+            winner = BLACK
         if game.playerColor == winner:
             game = setQuery(game, 'play', 'menu', 'You win!')
         else:
@@ -190,7 +192,7 @@ def shiftOutChessman(pointStatus, distance):
 def setQuery(game, lastStatus, nextStatus, msg):
     game.lastStatus = lastStatus
     game.nextStatus = nextStatus
-    game.enableButton = [data.CONFIRM_RECT, data.CANCEL_RECT]
+    game.enableButton = [CONFIRM_RECT, CANCEL_RECT]
     game.msg = msg
     return game
 
@@ -210,12 +212,12 @@ def initNetworkGame(game):
     response = post('', 'enter', '', game.url)
     if response['playerNum'] == '1':
         game.name = response['player1']
-        game.playerColor = data.WHITE
-        game.opponentColor = data.BLACK
+        game.playerColor = WHITE
+        game.opponentColor = BLACK
     else:
         game.name = response['player2']
-        game.playerColor = data.BLACK
-        game.opponentColor = data.WHITE
+        game.playerColor = BLACK
+        game.opponentColor = WHITE
     game.roomID = response['roomID']
     post(game.roomID, 'pre', game.name, game.url)
     return game
@@ -262,7 +264,7 @@ def checkOpponent(game):
             game.status = 'query'
             game = setQuery(game, 'play', 'menu',
                             'Your opponent ran away~ return pls')
-            game.enableButton = [data.CONFIRM_RECT]
+            game.enableButton = [CONFIRM_RECT]
     return game, newPointStatus
 
 
@@ -386,8 +388,8 @@ def menuControl(event, game):
             game.isOnline = False
             game.name = 'local'
             game.turn = game.name
-            game.opponentColor = data.BLACK
-            game.enableButton = [data.BACK_RECT, data.REPLAY_RECT]
+            game.opponentColor = BLACK
+            game.enableButton = [BACK_RECT, REPLAY_RECT]
         elif button == 'networkGame':
             game.resetGame()
             game.status = 'play'
@@ -397,7 +399,7 @@ def menuControl(event, game):
             game.msg = time.ctime() + '  enter room: ' + game.roomID + \
                        ' get name: ' + game.name
             game.time = time.time()
-            game.enableButton = [data.BACK_RECT, data.REPLAY_RECT]
+            game.enableButton = [BACK_RECT, REPLAY_RECT]
 
         elif button == 'quit':
             game.status = 'query'
@@ -415,13 +417,13 @@ def queryControl(event, game):
             game.resetGame()
             game.status = game.nextStatus
             if game.nextStatus == 'play':
-                game.enableButton = [data.BACK_RECT, data.REPLAY_RECT]
+                game.enableButton = [BACK_RECT, REPLAY_RECT]
                 if game.over:
                     game.resetGame()
             else:
                 if game.nextStatus == 'menu':
-                    game.enableButton = [data.LOCALGAME_RECT,
-                                         data.NETWORKGAME_RECT, data.MENU_QUIT_RECT]
+                    game.enableButton = [LOCALGAME_RECT,
+                                         NETWORKGAME_RECT, MENU_QUIT_RECT]
                 # if menu or quit
                 if game.isOnline:
                     resetRoom(game)

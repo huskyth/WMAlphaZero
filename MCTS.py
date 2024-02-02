@@ -4,6 +4,9 @@ import math
 import numpy as np
 import torch
 
+from watermelon_chess.alpha_zero_game import WMGame
+from watermelon_chess.common import WHITE, BLACK
+
 EPS = 1e-8
 
 log = logging.getLogger(__name__)
@@ -37,7 +40,8 @@ class MCTS():
         """
         for i in range(self.args.numMCTSSims):
             no_win_list = []
-            self.search(canonicalBoard, no_win_list)
+            no_change_num_list = [None, None]
+            self.search(canonicalBoard, no_win_list, no_change_num_list)
 
         s = self.game.stringRepresentation(canonicalBoard)
         counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
@@ -76,7 +80,28 @@ class MCTS():
             return False
         return True
 
-    def search(self, canonicalBoard, no_win_list):
+    @staticmethod
+    def judge_peace_by_chessman_num(board, no_change_num_list):
+        '''
+            no_change_num = [前一次的数目，计数]
+        '''
+        assert len(no_change_num_list) == 2
+        sum_of_all = WMGame.count_chessman(board, WHITE) + WMGame.count_chessman(board, BLACK)
+        if no_change_num_list[0] is None and no_change_num_list[1] is None:
+            no_change_num_list[0] = sum_of_all
+            no_change_num_list[1] = 1
+            return False
+        if sum_of_all == no_change_num_list[0]:
+            no_change_num_list[1] += 1
+            if no_change_num_list[1] == 60:
+                return True
+        else:
+            no_change_num_list[0] = sum_of_all
+            no_change_num_list[1] = 0
+            return False
+        return False
+
+    def search(self, canonicalBoard, no_win_list, no_change_num_list):
         """
         This function performs one iteration of MCTS. It is recursively called
         till a leaf node is found. The action chosen at each node is one that
@@ -95,8 +120,10 @@ class MCTS():
         Returns:
             v: the negative of the value of the current canonicalBoard
         """
-        if MCTS.judge_peace(no_win_list):
+
+        if MCTS.judge_peace(no_win_list) or MCTS.judge_peace_by_chessman_num(canonicalBoard, no_change_num_list):
             return 0
+
         s = self.game.stringRepresentation(canonicalBoard)
 
         if s not in self.Es:
@@ -147,7 +174,7 @@ class MCTS():
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
         next_s = self.game.getCanonicalForm(next_s, next_player)
         MCTS.add_peace_list(no_win_list, a)
-        v = self.search(next_s, no_win_list)
+        v = self.search(next_s, no_win_list, no_change_num_list)
 
         if (s, a) in self.Qsa:
             self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)

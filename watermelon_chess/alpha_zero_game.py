@@ -64,6 +64,11 @@ class WMGame(Game):
         return point_status.tostring()
 
     @staticmethod
+    def count_chessman(point_status, player):
+        assert len(point_status) == 21
+        return np.sum(point_status == player)
+
+    @staticmethod
     def display(board):
         pass
 
@@ -73,6 +78,8 @@ if __name__ == '__main__':
     test_point = wm_ame.getInitBoard()
     # point = wm_ame.getNextState(test_point, 1, (2, 20))
     # legal_moves = wm_ame.getValidMoves(test_point, -1)
-    test_point[0:4] = 0
-    print(test_point)
-    print(wm_ame.getGameEnded(test_point, -1))
+    # test_point[0:4] = 0
+    # print(test_point)
+    # print(wm_ame.getGameEnded(test_point, -1))
+    x = wm_ame.count_chessman(test_point, 0)
+    print(x)

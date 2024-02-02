@@ -43,11 +43,4 @@ class ChessBoard:
         self.blackNum = 6
 
     def initGameMap(self):
-        try:
-            f = open(MAPPATH, 'rb')
-            pointPos = json.loads(f.read())
-            self.gameMap = pointPos
-        except:
-            print('file open error')
-        finally:
-            f.close()
+        self.gameMap = GAME_MAP

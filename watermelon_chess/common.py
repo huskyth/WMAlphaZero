@@ -63,7 +63,20 @@ def get_distance():
         f.close()
 
 
+def get_map():
+    try:
+        f = open(MAPPATH, 'rb')
+        point_pos = json.loads(f.read())
+        return point_pos
+    except Exception as e:
+        print(f'file open error {e}')
+        return None
+    finally:
+        f.close()
+
+
 DISTANCE = get_distance()
+GAME_MAP = get_map()
 MOVE_TO_INDEX_DICT = {}
 INDEX_TO_MOVE_DICT = {}
 MOVE_LIST = []

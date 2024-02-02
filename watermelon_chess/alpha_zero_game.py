@@ -22,7 +22,7 @@ class WMGame(Game):
         return len(MOVE_TO_INDEX_DICT)
 
     def _transfer_action(self, action):
-        if isinstance(action, int):
+        if isinstance(action, int) or isinstance(action, np.int64):
             action = INDEX_TO_MOVE_DICT[action]
         return action
 

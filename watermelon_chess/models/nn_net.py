@@ -45,6 +45,7 @@ class WMNNetWrapper(NeuralNet):
             self.nnet.train()
             pi_losses = AverageMeter()
             v_losses = AverageMeter()
+            pi_accuracy = AverageMeter()
 
             batch_count = int(len(examples) / args.batch_size)
 
@@ -67,9 +68,12 @@ class WMNNetWrapper(NeuralNet):
                 l_v = self.loss_v(target_vs, out_v)
                 total_loss = l_pi + l_v
 
+                sum_accuracy = torch.sum(torch.argmax(target_pis, dim=1) == torch.argmax(out_pi, dim=1))
+
                 # record loss
                 pi_losses.update(l_pi.item(), boards.size(0))
                 v_losses.update(l_v.item(), boards.size(0))
+                pi_accuracy.update(sum_accuracy.item(), target_pis.size(0))
                 t.set_postfix(Loss_pi=pi_losses, Loss_v=v_losses)
 
                 # compute gradient and do SGD step
@@ -78,6 +82,7 @@ class WMNNetWrapper(NeuralNet):
                 optimizer.step()
             my_summary.add_float(x=step, y=pi_losses.avg, title="Pi Loss", x_name="step")
             my_summary.add_float(x=step, y=v_losses.avg, title="Value Loss", x_name="step")
+            my_summary.add_float(x=step, y=pi_accuracy.avg, title="Pi Accuracy", x_name="step")
 
     def predict(self, board):
         """

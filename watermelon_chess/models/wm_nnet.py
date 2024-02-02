@@ -1,6 +1,9 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+from watermelon_chess.common import from_array_to_input_tensor
 
 
 class WMNNet(nn.Module):
@@ -30,6 +33,13 @@ class WMNNet(nn.Module):
         self.fc3 = nn.Linear(512, self.action_size)
 
         self.fc4 = nn.Linear(512, 1)
+
+    @staticmethod
+    def transfer_board(board):
+        if isinstance(board, np.ndarray) and len(board) == 21:
+            input_tensor = from_array_to_input_tensor(board)
+            return input_tensor
+        return board
 
     def forward(self, s):
         #                                                           s: batch_size x board_x x board_y

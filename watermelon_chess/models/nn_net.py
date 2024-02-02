@@ -10,7 +10,6 @@ from NeuralNet import NeuralNet
 import torch
 import torch.optim as optim
 
-from watermelon_chess.common import from_array_to_input_tensor
 from watermelon_chess.models.wm_nnet import WMNNet
 
 args = dotdict({
@@ -51,6 +50,7 @@ class WMNNetWrapper(NeuralNet):
             for _ in t:
                 sample_ids = np.random.randint(len(examples), size=args.batch_size)
                 boards, pis, vs = list(zip(*[examples[i] for i in sample_ids]))
+                boards = tuple([WMNNet.transfer_board(x) for x in boards])
                 boards = torch.FloatTensor(np.array(boards).astype(np.float64))
                 target_pis = torch.FloatTensor(np.array(pis))
                 target_vs = torch.FloatTensor(np.array(vs).astype(np.float64))
@@ -75,19 +75,13 @@ class WMNNetWrapper(NeuralNet):
                 total_loss.backward()
                 optimizer.step()
 
-    def _transfer_board(self, board):
-        if isinstance(board, np.ndarray) and len(board) == 21:
-            input_tensor = from_array_to_input_tensor(board)
-            return input_tensor
-        return board
-
     def predict(self, board):
         """
         board: np array with board
         """
         # timing
         start = time.time()
-        board = self._transfer_board(board)
+        board = WMNNet.transfer_board(board)
 
         # preparing input
         board = torch.FloatTensor(board.astype(np.float64))

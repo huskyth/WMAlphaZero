@@ -2,7 +2,7 @@ from Game import Game
 import numpy as np
 
 from watermelon_chess.alpha_zero_board import WMBoard
-from watermelon_chess.common import MOVE_TO_INDEX_DICT, from_array_to_input_tensor, LENGTH_OF_BOARD
+from watermelon_chess.common import MOVE_TO_INDEX_DICT, from_array_to_input_tensor, LENGTH_OF_BOARD, INDEX_TO_MOVE_DICT
 
 
 class WMGame(Game):
@@ -21,9 +21,15 @@ class WMGame(Game):
     def getActionSize(self):
         return len(MOVE_TO_INDEX_DICT)
 
+    def _transfer_action(self, action):
+        if isinstance(action, int):
+            action = INDEX_TO_MOVE_DICT[action]
+        return action
+
     def getNextState(self, point_status, player, action):
         b = WMBoard()
         b.pointStatus = np.copy(point_status)
+        action = self._transfer_action(action)
         b.execute_move(action, player)
         return b.pointStatus, -player
 

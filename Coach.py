@@ -51,6 +51,7 @@ class Coach:
         board = self.game.getInitBoard()
         self.curPlayer = 1
         episodeStep = 0
+        no_win_list = []
 
         while True:
             episodeStep += 1
@@ -63,11 +64,12 @@ class Coach:
                 trainExamples.append([b, self.curPlayer, p, None])
 
             action = np.random.choice(len(pi), p=pi)
+            MCTS.add_peace_list(no_win_list, action)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
 
             r = self.game.getGameEnded(board, self.curPlayer)
-
-            if r != 0:
+            is_peace = MCTS.judge_peace(no_win_list)
+            if r != 0 or is_peace:
                 my_summary.add_float(x=simulate_number, y=episodeStep, title="Episode Length", x_name="simulate_number")
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 

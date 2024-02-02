@@ -54,14 +54,16 @@ class MCTS():
         probs = [x / counts_sum for x in counts]
         return probs
 
-    def _add_peace_list(self, no_win_list, value):
+    @staticmethod
+    def add_peace_list(no_win_list, value):
         if len(no_win_list) < 12:
             no_win_list.append(value)
         else:
             del no_win_list[0]
             no_win_list.append(value)
 
-    def _judge_peace(self, no_win_list):
+    @staticmethod
+    def judge_peace(no_win_list):
         if len(no_win_list) != 12:
             return False
         temp = torch.tensor(no_win_list)
@@ -93,7 +95,7 @@ class MCTS():
         Returns:
             v: the negative of the value of the current canonicalBoard
         """
-        if self._judge_peace(no_win_list):
+        if MCTS.judge_peace(no_win_list):
             return 0
         s = self.game.stringRepresentation(canonicalBoard)
 
@@ -144,7 +146,7 @@ class MCTS():
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
         next_s = self.game.getCanonicalForm(next_s, next_player)
-        self._add_peace_list(no_win_list, a)
+        MCTS.add_peace_list(no_win_list, a)
         v = self.search(next_s, no_win_list)
 
         if (s, a) in self.Qsa:

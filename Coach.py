@@ -31,7 +31,7 @@ class Coach:
         self.trainExamplesHistory = []  # history of examples from args.numItersForTrainExamplesHistory latest iterations
         self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
 
-    def executeEpisode(self):
+    def executeEpisode(self, simulate_number):
         """
         This function executes one episode of self-play, starting with player 1.
         As the game is played, each turn is added as a training example to
@@ -68,6 +68,7 @@ class Coach:
             r = self.game.getGameEnded(board, self.curPlayer)
 
             if r != 0:
+                my_summary.add_float(x=simulate_number, y=episodeStep, title="Episode Length", x_name="simulate_number")
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def learn(self):
@@ -86,9 +87,10 @@ class Coach:
             if not self.skipFirstSelfPlay or i > 1:
                 iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
 
-                for _ in tqdm(range(self.args.numEps), desc="Self Play"):
+                for idx in tqdm(range(self.args.numEps), desc="Self Play"):
+                    simulate_number = i * self.args.numEps + idx
                     self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
-                    iterationTrainExamples += self.executeEpisode()
+                    iterationTrainExamples += self.executeEpisode(simulate_number)
 
                 # save the iteration examples to the history 
                 self.trainExamplesHistory.append(iterationTrainExamples)

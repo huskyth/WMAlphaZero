@@ -22,7 +22,7 @@ args = dotdict({
 })
 
 
-class NNetWrapper(NeuralNet):
+class WMNNetWrapper(NeuralNet):
     def __init__(self, game):
         super().__init__(game)
         self.nnet = WMNNet(game, args)

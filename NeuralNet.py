@@ -1,4 +1,4 @@
-class NeuralNet():
+class NeuralNet:
     """
     This class specifies the base NeuralNet class. To define your own neural
     network, subclass this class and implement the functions below. The neural
@@ -11,7 +11,7 @@ class NeuralNet():
     def __init__(self, game):
         pass
 
-    def train(self, examples):
+    def train(self, examples, iter_num):
         """
         This function trains the neural network with examples obtained from
         self-play.

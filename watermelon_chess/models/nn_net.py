@@ -4,6 +4,7 @@ import time
 import numpy as np
 from tqdm import tqdm
 
+from Coach import my_summary
 from utils import *
 from NeuralNet import NeuralNet
 
@@ -32,14 +33,15 @@ class WMNNetWrapper(NeuralNet):
         if args.cuda:
             self.nnet.cuda()
 
-    def train(self, examples):
+    def train(self, examples, iter_num):
         """
         examples: list of examples, each example is of form (board, pi, v)
         """
         optimizer = optim.Adam(self.nnet.parameters())
-
+        step = None
         for epoch in range(args.epochs):
             print('EPOCH ::: ' + str(epoch + 1))
+            step = iter_num * args.epochs + epoch
             self.nnet.train()
             pi_losses = AverageMeter()
             v_losses = AverageMeter()
@@ -74,6 +76,8 @@ class WMNNetWrapper(NeuralNet):
                 optimizer.zero_grad()
                 total_loss.backward()
                 optimizer.step()
+            my_summary.add_float(x=step, y=pi_losses.avg, title="Pi Loss", x_name="step")
+            my_summary.add_float(x=step, y=v_losses.avg, title="Value Loss", x_name="step")
 
     def predict(self, board):
         """

@@ -10,6 +10,7 @@ from NeuralNet import NeuralNet
 import torch
 import torch.optim as optim
 
+from watermelon_chess.common import from_array_to_input_tensor
 from watermelon_chess.models.wm_nnet import WMNNet
 
 args = dotdict({
@@ -73,6 +74,12 @@ class WMNNetWrapper(NeuralNet):
                 optimizer.zero_grad()
                 total_loss.backward()
                 optimizer.step()
+
+    def _transfer_board(self, board):
+        if isinstance(board, np.ndarray) and len(board) == 21:
+            input_tensor = from_array_to_input_tensor(board)
+            return input_tensor
+        return board
 
     def predict(self, board):
         """

@@ -16,7 +16,7 @@ class WMGame(Game):
         return np.array(b.pointStatus)
 
     def getBoardSize(self):
-        return LENGTH_OF_BOARD
+        return 7, 7
 
     def getActionSize(self):
         return len(MOVE_TO_INDEX_DICT)

@@ -87,6 +87,7 @@ class WMNNetWrapper(NeuralNet):
         """
         # timing
         start = time.time()
+        board = self._transfer_board(board)
 
         # preparing input
         board = torch.FloatTensor(board.astype(np.float64))

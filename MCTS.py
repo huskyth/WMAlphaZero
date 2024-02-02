@@ -2,6 +2,7 @@ import logging
 import math
 
 import numpy as np
+import torch
 
 EPS = 1e-8
 
@@ -35,7 +36,8 @@ class MCTS():
                    proportional to Nsa[(s,a)]**(1./temp)
         """
         for i in range(self.args.numMCTSSims):
-            self.search(canonicalBoard)
+            no_win_list = []
+            self.search(canonicalBoard, no_win_list)
 
         s = self.game.stringRepresentation(canonicalBoard)
         counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
@@ -52,7 +54,27 @@ class MCTS():
         probs = [x / counts_sum for x in counts]
         return probs
 
-    def search(self, canonicalBoard):
+    def _add_peace_list(self, no_win_list, value):
+        if len(no_win_list) < 12:
+            no_win_list.append(value)
+        else:
+            del no_win_list[0]
+            no_win_list.append(value)
+
+    def _judge_peace(self, no_win_list):
+        if len(no_win_list) != 12:
+            return False
+        temp = torch.tensor(no_win_list)
+        a = temp[:4]
+        b = temp[4:8]
+        c = temp[8:12]
+        if not a.equal(b):
+            return False
+        if not a.equal(c):
+            return False
+        return True
+
+    def search(self, canonicalBoard, no_win_list):
         """
         This function performs one iteration of MCTS. It is recursively called
         till a leaf node is found. The action chosen at each node is one that
@@ -71,7 +93,8 @@ class MCTS():
         Returns:
             v: the negative of the value of the current canonicalBoard
         """
-
+        if self._judge_peace(no_win_list):
+            return 0
         s = self.game.stringRepresentation(canonicalBoard)
 
         if s not in self.Es:
@@ -121,8 +144,8 @@ class MCTS():
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
         next_s = self.game.getCanonicalForm(next_s, next_player)
-
-        v = self.search(next_s)
+        self._add_peace_list(no_win_list, a)
+        v = self.search(next_s, no_win_list)
 
         if (s, a) in self.Qsa:
             self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)

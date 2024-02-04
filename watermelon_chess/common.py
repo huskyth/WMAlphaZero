@@ -128,7 +128,8 @@ def create_directory(path):
 
 
 def draw_circle(image, x, y, color):
-    cv2.circle(image, (int(x + CHESSMAN_WIDTH / 2), int(y + CHESSMAN_HEIGHT / 2)), int(CHESSMAN_HEIGHT // 2 * 1.5), color, -1)
+    cv2.circle(image, (int(x + CHESSMAN_WIDTH / 2), int(y + CHESSMAN_HEIGHT / 2)), int(CHESSMAN_HEIGHT // 2 * 1.5),
+               color, -1)
 
 
 def write_image(name, image):
@@ -151,6 +152,7 @@ def draw_chessmen(point_status, image, is_write, name):
             draw_circle(image, x, y, (255, 0, 0))
     if is_write:
         write_image(name, image)
+    return image
 
 
 def fix_xy(target):
@@ -159,3 +161,16 @@ def fix_xy(target):
     y = GAME_MAP[target][1] * \
         SCREEN_HEIGHT - CHESSMAN_HEIGHT * 1
     return x, y
+
+
+def write_video(frame_list, file_name, fps=0.5):
+    if len(frame_list) == 0:
+        return
+    image = frame_list[0]
+    assert isinstance(image, np.ndarray)
+    result = cv2.VideoWriter(f"{file_name}.mp4", cv2.VideoWriter_fourcc(*'XVID'), fps,
+                             (int(image.shape[1]), int(image.shape[0])))
+
+    for i, frame in enumerate(frame_list):
+        result.write(frame)
+    result.release()

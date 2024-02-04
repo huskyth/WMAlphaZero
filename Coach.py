@@ -76,8 +76,6 @@ class Coach:
         no_change_num_list = [None, None]
         while True:
             episodeStep += 1
-            if is_write:
-                self.write_file(episodeStep, simulate_number, directory, board)
             canonicalBoard = self.game.getCanonicalForm(board, self.curPlayer)
 
             temp = int(episodeStep < self.args.tempThreshold)
@@ -95,13 +93,13 @@ class Coach:
             is_peace = MCTS.judge_peace(no_win_list) or MCTS.judge_peace_by_chessman_num(board, no_change_num_list)
             if is_write:
                 self.write_result(directory, is_peace, r)
-
+                self.write_file(episodeStep, simulate_number, directory, board)
             if r != 0 or is_peace:
                 my_summary.add_float(x=simulate_number, y=episodeStep, title="Episode Length", x_name="simulate_number")
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def _is_write(self):
-        if np.random.uniform(0, 1, 1).item() < 0.15:
+        if np.random.uniform(0, 1, 1).item() < 1:
             return True
         return False
 

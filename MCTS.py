@@ -93,7 +93,7 @@ class MCTS():
             return False
         if sum_of_all == no_change_num_list[0]:
             no_change_num_list[1] += 1
-            if no_change_num_list[1] == 60:
+            if no_change_num_list[1] == 240:
                 return True
         else:
             no_change_num_list[0] = sum_of_all

@@ -127,17 +127,20 @@ class Coach:
             my_summary.add_float(x=i, y=nwins, title="New Wins", x_name="epoch")
             my_summary.add_float(x=i, y=pwins, title="PREV Wins", x_name="epoch")
             my_summary.add_float(x=i, y=draws, title="Draws", x_name="epoch")
-            win_rate = float(nwins) / (pwins + nwins)
-            my_summary.add_float(x=i, y=win_rate, title="Win Rate", x_name="epoch")
 
             log.info('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwins, pwins, draws))
-            if pwins + nwins == 0 or win_rate < self.args.updateThreshold:
+            if pwins + nwins == 0 or float(nwins) / (pwins + nwins) < self.args.updateThreshold:
                 log.info('REJECTING NEW MODEL')
                 self.nnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             else:
                 log.info('ACCEPTING NEW MODEL')
                 self.nnet.save_checkpoint(folder=self.args.checkpoint, filename=self.getCheckpointFile(i))
                 self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='best.pth.tar')
+            if pwins + nwins == 0:
+                win_rate = -1
+            else:
+                win_rate = float(nwins) / (pwins + nwins)
+            my_summary.add_float(x=i, y=win_rate, title="Win Rate", x_name="epoch")
 
     def getCheckpointFile(self, iteration):
         return 'checkpoint_' + str(iteration) + '.pth.tar'

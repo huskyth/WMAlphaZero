@@ -11,7 +11,8 @@ from tqdm import tqdm
 
 from Arena import Arena
 from MCTS import MCTS
-from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, write_image, draw_chessmen, BACKGROUND
+from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, write_image, draw_chessmen, BACKGROUND, \
+    ROOT_PATH
 from watermelon_chess.tensor_board_tool import MySummary
 
 log = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ class Coach:
 
     def write_file(self, episode_number, simulate_number, directory, board):
         name = directory / f"{simulate_number}_simulate_{episode_number}_step"
-        image = cv2.imread(BACKGROUND)
+        image = cv2.imread(str(ROOT_PATH / "watermelon_chess" / BACKGROUND))
         draw_chessmen(board, image, True, name)
 
     def create_procedure_directory(self, directory):

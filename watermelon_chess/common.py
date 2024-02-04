@@ -128,7 +128,7 @@ def create_directory(path):
 
 
 def draw_circle(image, x, y, color):
-    cv2.circle(image, (int(x + CHESSMAN_WIDTH / 2), int(y + CHESSMAN_HEIGHT / 2)), CHESSMAN_HEIGHT // 2, color, -1)
+    cv2.circle(image, (int(x + CHESSMAN_WIDTH / 2), int(y + CHESSMAN_HEIGHT / 2)), int(CHESSMAN_HEIGHT // 2 * 1.5), color, -1)
 
 
 def write_image(name, image):

@@ -1,5 +1,7 @@
 import copy
 
+import numpy as np
+
 from watermelon_chess.chessBoard import ChessBoard
 from watermelon_chess.common import *
 from watermelon_chess.control import shiftOutChessman, getNeighboors
@@ -58,4 +60,6 @@ class WMBoard(ChessBoard):
 if __name__ == '__main__':
     image = read_image(BACKGROUND)
     wm_board = WMBoard()
-    draw_chessmen(wm_board.pointStatus, image, True, "test")
+    for i in range(10):
+        np.random.shuffle(wm_board.pointStatus)
+        draw_chessmen(wm_board.pointStatus, image, True, f"test_{i}")

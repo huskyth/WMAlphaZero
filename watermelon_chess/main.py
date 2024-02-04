@@ -129,11 +129,7 @@ class UI:
         self.screen.blit(self.hand, (self.handX, self.handY))
 
     def fixXY(self, target):
-        x = self.game.gameMap[target][0] * \
-            SCREEN_WIDTH - CHESSMAN_WIDTH * 0.5
-        y = self.game.gameMap[target][1] * \
-            SCREEN_HEIGHT - CHESSMAN_HEIGHT * 1
-        return x, y
+        return fix_xy(target)
 
 
 def main():

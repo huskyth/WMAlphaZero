@@ -1,11 +1,11 @@
+import copy
 import json
 import os
 
+import cv2
 import numpy
 import numpy as np
-import torch
 
-from watermelon_chess.control import getNeighboors
 from pathlib import Path
 
 MENU = 'resources/images/menu.png'
@@ -39,7 +39,9 @@ FULLSCREENMOD = False
 CHESSMAN_WIDTH = 20
 CHESSMAN_HEIGHT = 20
 BLACK = 1
+BLACK_COLOR = (0, 0, 0)
 WHITE = -1
+WHITE_COLOR = (255, 255, 255)
 COMPUTER = 1
 PLAYER = 2
 
@@ -49,6 +51,14 @@ ROOT_PATH = Path(os.path.abspath(__file__)).parent.parent
 DISTANCEPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/distance.txt')
 FONT = str(ROOT_PATH / 'watermelon_chess/resources/font/arial.ttf')
 MAPPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/pointPos.txt')
+
+
+def getNeighboors(chessman, distance):
+    neighboorChessmen = []
+    for eachChessman, eachDistance in enumerate(distance[chessman]):
+        if eachDistance == 1:
+            neighboorChessmen.append(eachChessman)
+    return neighboorChessmen
 
 
 def get_distance():
@@ -115,3 +125,33 @@ def from_array_to_input_tensor(numpy_array):
 def create_directory(path):
     if not os.path.exists(str(path)):
         os.mkdir(str(path))
+
+
+def draw_circle(image, x, y, color):
+    cv2.circle(image, (int(x), int(y)), 3, color, -1)
+
+
+def write_image(name, image):
+    cv2.imwrite(f"{name}.png", image)
+
+
+def draw_chessmen(point_status, image, is_write, name):
+    image = copy.deepcopy(image)
+    for index, point in enumerate(point_status):
+        if point == 0:
+            continue
+        (x, y) = fix_xy(index)
+        if point == BLACK:
+            draw_circle(image, x, y, BLACK_COLOR)
+        elif point == WHITE:
+            draw_circle(image, x, y, WHITE_COLOR)
+    if is_write:
+        write_image(name, image)
+
+
+def fix_xy(target):
+    x = GAME_MAP[target][0] * \
+        SCREEN_WIDTH - CHESSMAN_WIDTH * 0.5
+    y = GAME_MAP[target][1] * \
+        SCREEN_HEIGHT - CHESSMAN_HEIGHT * 1
+    return x, y

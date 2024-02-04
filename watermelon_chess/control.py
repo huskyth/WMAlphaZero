@@ -47,14 +47,6 @@ def chosenChessman(x, y, gameMap):
     return None
 
 
-def getNeighboors(chessman, distance):
-    neighboorChessmen = []
-    for eachChessman, eachDistance in enumerate(distance[chessman]):
-        if eachDistance == 1:
-            neighboorChessmen.append(eachChessman)
-    return neighboorChessmen
-
-
 def getScore(pointStatus, distance):
     score = 0
     scoreLevel = [1, 2, 4, 6]

@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import time
 
 import cv2
 import numpy
@@ -52,6 +53,7 @@ DISTANCEPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/distance.txt')
 FONT = str(ROOT_PATH / 'watermelon_chess/resources/font/arial.ttf')
 MAPPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/pointPos.txt')
 MODEL_PATH = str(ROOT_PATH / "temp")
+
 
 def getNeighboors(chessman, distance):
     neighboorChessmen = []
@@ -174,3 +176,9 @@ def write_video(frame_list, file_name, fps=0.5):
     for i, frame in enumerate(frame_list):
         result.write(frame)
     result.release()
+
+
+PROCEDURE_PATH = ROOT_PATH / "training_procedure"
+create_directory(PROCEDURE_PATH)
+PROCEDURE_DIRECTORY = PROCEDURE_PATH / str(time.time())
+create_directory(PROCEDURE_DIRECTORY)

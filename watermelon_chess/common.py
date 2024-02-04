@@ -8,6 +8,7 @@ import numpy
 import numpy as np
 
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 MENU = 'resources/images/menu.png'
 BACKGROUND = 'resources/images/watermelon.png'
@@ -188,3 +189,17 @@ create_directory(PROCEDURE_DIRECTORY)
 def write_msg(msg, path):
     with open(path, 'a') as file:
         file.write(msg + "\n")
+
+
+def bar_show(data):
+    plt.bar(range(len(data)), data)
+    plt.show()
+
+
+if __name__ == '__main__':
+    n = len(MOVE_TO_INDEX_DICT)
+    data = np.random.normal(0, 1, n)
+    bar_show(data)
+    max_action = np.argmax(data)
+    print(max_action, data[max_action])
+    print(INDEX_TO_MOVE_DICT[max_action])

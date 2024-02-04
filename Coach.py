@@ -16,7 +16,7 @@ from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, write
 from watermelon_chess.tensor_board_tool import MySummary
 
 log = logging.getLogger(__name__)
-my_summary = MySummary(use_wandb=False)
+my_summary = MySummary(use_wandb=True)
 
 
 class Coach:
@@ -99,7 +99,7 @@ class Coach:
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def _is_write(self):
-        if np.random.uniform(0, 1, 1).item() < 1:
+        if np.random.uniform(0, 1, 1).item() < 0.15:
             return True
         return False
 

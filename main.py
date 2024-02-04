@@ -5,6 +5,7 @@ import coloredlogs
 from Coach import Coach
 from utils import *
 from watermelon_chess.alpha_zero_game import WMGame
+from watermelon_chess.common import ROOT_PATH
 from watermelon_chess.models.nn_net import WMNNetWrapper
 
 log = logging.getLogger(__name__)
@@ -23,8 +24,8 @@ args = dotdict({
     'cpuct': 1,
 
     'checkpoint': './temp/',
-    'load_model': False,
-    'load_folder_file': ('/dev/models/8x100x50', 'best.pth.tar'),
+    'load_model': True,
+    'load_folder_file': (str(ROOT_PATH / "temp"), 'best.pth.tar'),
     'numItersForTrainExamplesHistory': 20,
 
 })

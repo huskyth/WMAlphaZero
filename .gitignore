@@ -13,3 +13,5 @@ checkpoints/
 
 /wandb_log
 /summary_log
+
+/training_procedure

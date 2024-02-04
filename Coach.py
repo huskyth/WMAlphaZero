@@ -5,11 +5,13 @@ from collections import deque
 from pickle import Pickler, Unpickler
 from random import shuffle
 
+import cv2
 import numpy as np
 from tqdm import tqdm
 
 from Arena import Arena
 from MCTS import MCTS
+from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, write_image, draw_chessmen, BACKGROUND
 from watermelon_chess.tensor_board_tool import MySummary
 
 log = logging.getLogger(__name__)
@@ -31,7 +33,15 @@ class Coach:
         self.trainExamplesHistory = []  # history of examples from args.numItersForTrainExamplesHistory latest iterations
         self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
 
-    def executeEpisode(self, simulate_number):
+    def write_file(self, episode_number, simulate_number, directory, board):
+        name = directory / f"{simulate_number}_simulate_{episode_number}_step"
+        image = cv2.imread(BACKGROUND)
+        draw_chessmen(board, image, True, name)
+
+    def create_procedure_directory(self, directory):
+        create_directory(directory)
+
+    def executeEpisode(self, simulate_number, is_write):
         """
         This function executes one episode of self-play, starting with player 1.
         As the game is played, each turn is added as a training example to
@@ -47,6 +57,10 @@ class Coach:
                            pi is the MCTS informed policy vector, v is +1 if
                            the player eventually won the game, else -1.
         """
+        directory = None
+        if is_write:
+            directory = PROCEDURE_DIRECTORY / str(simulate_number)
+            self.create_procedure_directory(directory)
         trainExamples = []
         board = self.game.getInitBoard()
         self.curPlayer = 1
@@ -56,6 +70,8 @@ class Coach:
         while True:
             episodeStep += 1
             canonicalBoard = self.game.getCanonicalForm(board, self.curPlayer)
+            if is_write:
+                self.write_file(episodeStep, simulate_number, directory, canonicalBoard)
             temp = int(episodeStep < self.args.tempThreshold)
 
             pi = self.mcts.getActionProb(canonicalBoard, temp=temp)
@@ -72,6 +88,11 @@ class Coach:
             if r != 0 or is_peace:
                 my_summary.add_float(x=simulate_number, y=episodeStep, title="Episode Length", x_name="simulate_number")
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
+
+    def _is_write(self):
+        if np.random.uniform(0, 1, 1).item() < 0.3:
+            return True
+        return False
 
     def learn(self):
         """
@@ -92,7 +113,7 @@ class Coach:
                 for idx in tqdm(range(self.args.numEps), desc="Self Play"):
                     simulate_number = i * self.args.numEps + idx
                     self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
-                    iterationTrainExamples += self.executeEpisode(simulate_number)
+                    iterationTrainExamples += self.executeEpisode(simulate_number, self._is_write())
 
                 # save the iteration examples to the history 
                 self.trainExamplesHistory.append(iterationTrainExamples)

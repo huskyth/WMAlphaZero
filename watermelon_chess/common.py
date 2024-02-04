@@ -135,6 +135,7 @@ def draw_circle(image, x, y, color):
 
 
 def write_image(name, image):
+    name = str(name)
     cv2.imwrite(f"{name}.png", image)
 
 

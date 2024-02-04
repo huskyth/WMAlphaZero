@@ -12,7 +12,7 @@ from tqdm import tqdm
 from Arena import Arena
 from MCTS import MCTS
 from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, write_image, draw_chessmen, BACKGROUND, \
-    ROOT_PATH
+    ROOT_PATH, write_msg
 from watermelon_chess.tensor_board_tool import MySummary
 
 log = logging.getLogger(__name__)
@@ -41,6 +41,12 @@ class Coach:
 
     def create_procedure_directory(self, directory):
         create_directory(directory)
+
+    def write_result(self, directory, is_peace, r):
+        path = directory / "result.txt"
+        if r != 0 or is_peace:
+            msg = f'胜负情况：{r != 0}, {"和棋" if is_peace else ""}'
+            write_msg(msg, path)
 
     def executeEpisode(self, simulate_number, is_write):
         """
@@ -88,6 +94,7 @@ class Coach:
             r = self.game.getGameEnded(board, self.curPlayer)
             is_peace = MCTS.judge_peace(no_win_list) or MCTS.judge_peace_by_chessman_num(board, no_change_num_list)
             if is_write:
+                self.write_result(directory, is_peace, r)
 
             if r != 0 or is_peace:
                 my_summary.add_float(x=simulate_number, y=episodeStep, title="Episode Length", x_name="simulate_number")

@@ -183,3 +183,8 @@ PROCEDURE_PATH = ROOT_PATH / "training_procedure"
 create_directory(PROCEDURE_PATH)
 PROCEDURE_DIRECTORY = PROCEDURE_PATH / str(time.time())
 create_directory(PROCEDURE_DIRECTORY)
+
+
+def write_msg(msg, path):
+    with open(path, 'a') as file:
+        file.write(msg + "\n")

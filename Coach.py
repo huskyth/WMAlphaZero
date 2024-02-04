@@ -91,7 +91,7 @@ class Coach:
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def _is_write(self):
-        if np.random.uniform(0, 1, 1).item() < 0.3:
+        if np.random.uniform(0, 1, 1).item() < 0.15:
             return True
         return False
 

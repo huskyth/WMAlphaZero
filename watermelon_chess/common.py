@@ -51,7 +51,7 @@ ROOT_PATH = Path(os.path.abspath(__file__)).parent.parent
 DISTANCEPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/distance.txt')
 FONT = str(ROOT_PATH / 'watermelon_chess/resources/font/arial.ttf')
 MAPPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/pointPos.txt')
-
+MODEL_PATH = str(ROOT_PATH / "temp")
 
 def getNeighboors(chessman, distance):
     neighboorChessmen = []

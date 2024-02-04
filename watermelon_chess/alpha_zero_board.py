@@ -56,4 +56,6 @@ class WMBoard(ChessBoard):
 
 
 if __name__ == '__main__':
-    WMBoard().get_legal_moves()
+    image = read_image(BACKGROUND)
+    wm_board = WMBoard()
+    draw_chessmen(wm_board.pointStatus, image, True, "test")

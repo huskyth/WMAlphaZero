@@ -128,11 +128,15 @@ def create_directory(path):
 
 
 def draw_circle(image, x, y, color):
-    cv2.circle(image, (int(x), int(y)), 3, color, -1)
+    cv2.circle(image, (int(x + CHESSMAN_WIDTH / 2), int(y + CHESSMAN_HEIGHT / 2)), CHESSMAN_HEIGHT // 2, color, -1)
 
 
 def write_image(name, image):
     cv2.imwrite(f"{name}.png", image)
+
+
+def read_image(path):
+    return cv2.imread(path)
 
 
 def draw_chessmen(point_status, image, is_write, name):
@@ -144,7 +148,7 @@ def draw_chessmen(point_status, image, is_write, name):
         if point == BLACK:
             draw_circle(image, x, y, BLACK_COLOR)
         elif point == WHITE:
-            draw_circle(image, x, y, WHITE_COLOR)
+            draw_circle(image, x, y, (255, 0, 0))
     if is_write:
         write_image(name, image)
 

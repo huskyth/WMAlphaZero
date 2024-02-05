@@ -186,8 +186,9 @@ PROCEDURE_DIRECTORY = PROCEDURE_PATH / str(time.time())
 create_directory(PROCEDURE_DIRECTORY)
 
 
-def write_msg(msg, path):
-    with open(path, 'a') as file:
+def write_msg(msg, path, is_append=True):
+    mode = 'a' if is_append else 'w'
+    with open(path, mode) as file:
         file.write(msg + "\n")
 
 

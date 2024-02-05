@@ -33,6 +33,8 @@ class Coach:
         self.mcts = MCTS(self.game, self.nnet, self.args)
         self.trainExamplesHistory = []  # history of examples from args.numItersForTrainExamplesHistory latest iterations
         self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
+        self.peace_sum = 0
+        self.not_peace_sum = 0
 
     def write_file(self, episode_number, simulate_number, directory, board):
         name = directory / f"{simulate_number}_simulate_{episode_number}_step"
@@ -94,12 +96,20 @@ class Coach:
             if is_write:
                 self.write_result(directory, is_peace, r)
                 self.write_file(episodeStep, simulate_number, directory, board)
+            if r != 0:
+                self.not_peace_sum += 1
+            if is_peace:
+                self.peace_sum += 1
             if r != 0 or is_peace:
                 my_summary.add_float(x=simulate_number, y=episodeStep, title="Episode Length", x_name="simulate_number")
+                my_summary.add_float(x=simulate_number, y=self.not_peace_sum, title="Win Or Lose Times",
+                                     x_name="simulate_number")
+                my_summary.add_float(x=simulate_number, y=self.peace_sum, title="Peace Times",
+                                     x_name="simulate_number")
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def _is_write(self):
-        if np.random.uniform(0, 1, 1).item() < 0.15:
+        if np.random.uniform(0, 1, 1).item() < 0.015:
             return True
         return False
 

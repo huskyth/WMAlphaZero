@@ -11,8 +11,8 @@ from tqdm import tqdm
 
 from Arena import Arena
 from MCTS import MCTS
-from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, write_image, draw_chessmen, BACKGROUND, \
-    ROOT_PATH, write_msg
+from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, draw_chessmen, BACKGROUND, \
+    write_msg
 from watermelon_chess.tensor_board_tool import MySummary
 
 log = logging.getLogger(__name__)
@@ -108,7 +108,7 @@ class Coach:
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def _is_write(self):
-        if np.random.uniform(0, 1, 1).item() < 0.015:
+        if np.random.uniform(0, 1, 1).item() < 0.01:
             return True
         return False
 
@@ -133,7 +133,7 @@ class Coach:
                     self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
                     iterationTrainExamples += self.executeEpisode(simulate_number, self._is_write())
 
-                # save the iteration examples to the history 
+                # save the iteration examples to the history
                 self.trainExamplesHistory.append(iterationTrainExamples)
 
             if len(self.trainExamplesHistory) > self.args.numItersForTrainExamplesHistory:
@@ -141,7 +141,7 @@ class Coach:
                     f"Removing the oldest entry in trainExamples. len(trainExamplesHistory) = {len(self.trainExamplesHistory)}")
                 self.trainExamplesHistory.pop(0)
             # backup history to a file
-            # NB! the examples were collected using the model from the previous iteration, so (i-1)  
+            # NB! the examples were collected using the model from the previous iteration, so (i-1)
             self.saveTrainExamples(i - 1)
 
             # shuffle examples before training

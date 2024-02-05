@@ -16,7 +16,7 @@ from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, draw_
 from watermelon_chess.tensor_board_tool import MySummary
 
 log = logging.getLogger(__name__)
-my_summary = MySummary(use_wandb=False)
+my_summary = MySummary(use_wandb=True)
 
 
 class Coach:

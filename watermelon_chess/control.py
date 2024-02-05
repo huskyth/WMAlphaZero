@@ -1,10 +1,8 @@
 import pygame
 import urllib
-import json
-import time
-import copy
 from pygame.locals import *
 
+from MCTS import control_by_net_work
 from watermelon_chess.common import *
 
 # difficulty of the game
@@ -140,47 +138,6 @@ def checkWinner(game):
     return game
 
 
-def check(chessman, distance, pointStatus, checkedChessmen):
-    checkedChessmen.append(chessman)
-    dead = True
-    neighboorChessmen = getNeighboors(chessman, distance)
-    for neighboorChessman in neighboorChessmen:
-        if neighboorChessman not in checkedChessmen:
-            # if the neighboor is the same color, check the neighboor to find a
-            # empty neighboor
-            if pointStatus[neighboorChessman] == pointStatus[chessman]:
-                dead = check(neighboorChessman, distance,
-                             pointStatus, checkedChessmen)
-                if dead == False:
-                    return dead
-            elif pointStatus[neighboorChessman] == 0:
-                dead = False
-                return dead
-            else:
-                pass
-    return dead
-
-
-def shiftOutChessman(pointStatus, distance):
-    deadChessmen = []
-    bakPointStatus = copy.deepcopy(pointStatus)
-    for chessman, color in enumerate(pointStatus):
-        checkedChessmen = []
-        dead = True
-        if color != 0:
-            # pdb.set_trace()
-            dead = check(chessman, distance, pointStatus, checkedChessmen)
-        else:
-            pass
-        if dead:
-            deadChessmen.append(chessman)
-        pointStatus = bakPointStatus
-    for eachDeadChessman in deadChessmen:
-        pointStatus[eachDeadChessman] = 0
-
-    return pointStatus
-
-
 def setQuery(game, lastStatus, nextStatus, msg):
     game.lastStatus = lastStatus
     game.nextStatus = nextStatus
@@ -260,7 +217,7 @@ def checkOpponent(game):
     return game, newPointStatus
 
 
-def playControl(event, game):
+def playControl(event, game, network, wm_game):
     color = game.strColor(game.playerColor)
     chessman = None
     button = None
@@ -338,7 +295,8 @@ def playControl(event, game):
                 else:
                     pass
             bakPointStatus = copy.deepcopy(game.pointStatus)
-            move, score = computerMove(bakPointStatus, game.distance, 1)
+            # move, score = computerMove(bakPointStatus, game.distance, 1)
+            move, score = control_by_net_work(network, bakPointStatus, wm_game)
             game.pointStatus[move[1]] = game.opponentColor
             game.pointStatus[move[0]] = 0
             game.turn = game.name
@@ -427,7 +385,7 @@ def queryControl(event, game):
     return game
 
 
-def eventControl(event, game):
+def eventControl(event, game, network, wm_game):
     if event.type == QUIT:
         game.lastStatus = game.status
         game.status = 'query'
@@ -450,7 +408,7 @@ def eventControl(event, game):
         if game.status == 'menu':
             game = menuControl(event, game)
         elif game.status == 'play':
-            game = playControl(event, game)
+            game = playControl(event, game, network, wm_game)
         elif game.status == 'query':
             game = queryControl(event, game)
         else:

@@ -1,7 +1,9 @@
 import pygame
 from control import eventControl
+from watermelon_chess.alpha_zero_game import WMGame
 from watermelon_chess.common import *
 from watermelon_chess.game import Game
+from watermelon_chess.models.nn_net import WMNNetWrapper
 
 
 class UI:
@@ -36,6 +38,8 @@ class UI:
         self.confirmImage = pygame.image.load(CONFIRM).convert_alpha()
         self.cancelImage = pygame.image.load(CANCEL).convert_alpha()
         self.displayMenu()
+        self.wm_game = WMGame()
+        self.network = WMNNetWrapper(self.wm_game)
 
     def eventManagement(self):
         while True:
@@ -43,7 +47,7 @@ class UI:
                 return
             else:
                 for event in pygame.event.get():
-                    self.game = eventControl(event, self.game)
+                    self.game = eventControl(event, self.game, self.network, self.wm_game)
                     if self.game.status == 'menu':
                         self.displayMenu()
                     elif self.game.status == 'play':

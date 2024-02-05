@@ -1,6 +1,5 @@
 from watermelon_chess.chessBoard import ChessBoard
 from watermelon_chess.common import *
-from watermelon_chess.control import shiftOutChessman, getNeighboors
 
 
 class WMBoard(ChessBoard):

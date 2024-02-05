@@ -2,10 +2,10 @@ import logging
 import math
 
 import numpy as np
-import torch
 
+from utils import dotdict
 from watermelon_chess.alpha_zero_game import WMGame
-from watermelon_chess.common import WHITE, BLACK
+from watermelon_chess.common import WHITE, BLACK, INDEX_TO_MOVE_DICT
 
 EPS = 1e-8
 
@@ -162,3 +162,13 @@ class MCTS():
 
         self.Ns[s] += 1
         return -v
+
+
+def control_by_net_work(network, board, wm_game):
+    board = np.array(board)
+    board = wm_game.getCanonicalForm(board, 1)
+    args = dotdict({'numMCTSSims': 25, 'cpuct': 1.0})
+    mcts = MCTS(wm_game, network, args)
+    a = np.argmax(mcts.getActionProb(board, temp=0))
+    a = INDEX_TO_MOVE_DICT[a]
+    return a, -1

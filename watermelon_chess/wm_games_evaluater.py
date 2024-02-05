@@ -55,11 +55,11 @@ class GamesEvaluate:
         n1p = lambda x: np.argmax(mcts.getActionProb(x, temp=0))
 
         arena = Arena.Arena(n1p, rp, game)
-        one_won, two_won, draws = arena.playGames(400, verbose=False)
+        one_won, two_won, draws = arena.playGames(500, verbose=False)
         print(f"n1p won {one_won}, rp Won {two_won}, peace {draws}")
 
     def wm_pytorch(self):
-        self.execute_game_test(WMGame(), WMNNetWrapper, name="temp.pth1024.tar")
+        self.execute_game_test(WMGame(), WMNNetWrapper, name="best.pth.tar")
 
 
 if __name__ == '__main__':

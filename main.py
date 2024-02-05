@@ -1,4 +1,5 @@
 import logging
+import os.path
 
 import coloredlogs
 
@@ -24,14 +25,20 @@ args = dotdict({
     'cpuct': 1,
 
     'checkpoint': './temp/',
-    'load_model': True,
+    'load_model': False,
     'load_folder_file': (str(ROOT_PATH / "temp"), 'best.pth.tar'),
     'numItersForTrainExamplesHistory': 20,
 
 })
 
 
+def judge_best_file():
+    if os.path.exists(args.load_folder_file[0] + os.sep + args.load_folder_file[1]):
+        args['load_model'] = True
+
+
 def main():
+    judge_best_file()
     log.info('Loading %s...', WMGame.__name__)
     g = WMGame()
 

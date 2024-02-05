@@ -1,10 +1,13 @@
+import copy
+import time
+
 import Arena
 from MCTS import MCTS
 
 import numpy as np
 from utils import *
 from watermelon_chess.alpha_zero_game import WMGame
-from watermelon_chess.common import DISTANCE, MODEL_PATH
+from watermelon_chess.common import DISTANCE, MODEL_PATH, MOVE_TO_INDEX_DICT, draw_chessmen, read_image, BACKGROUND
 from watermelon_chess.control import computerMove
 from watermelon_chess.models.nn_net import WMNNetWrapper
 
@@ -25,7 +28,13 @@ class GreedyPlayer:
     @staticmethod
     def greedy_action(point_status):
         level = 1
-        return computerMove(point_status, DISTANCE, level)
+        point_status_copy = copy.deepcopy(point_status)
+        a, _ = computerMove(point_status_copy, DISTANCE, level)
+        if a is None:
+            draw_chessmen(point_status, read_image(BACKGROUND), False, f"{time.time()}_{a}")
+
+        a = MOVE_TO_INDEX_DICT[a]
+        return a
 
 
 class GamesEvaluate:
@@ -33,6 +42,7 @@ class GamesEvaluate:
     @staticmethod
     def execute_game_test(game, neural_net, name=None):
         rp = RandomPlayer(game).play
+        greedy_player = GreedyPlayer.greedy_action
 
         args = dotdict({'numMCTSSims': 25, 'cpuct': 1.0})
 
@@ -43,8 +53,9 @@ class GamesEvaluate:
         mcts = MCTS(game, net_player, args)
         n1p = lambda x: np.argmax(mcts.getActionProb(x, temp=0))
 
-        arena = Arena.Arena(n1p, rp, game)
-        print(arena.playGames(2, verbose=False))
+        arena = Arena.Arena(greedy_player, rp, game)
+        one_won, two_won, draws = arena.playGames(40, verbose=False)
+        print(f"greedy_player won {one_won}, rp Won {two_won}, peace {draws}")
 
     def wm_pytorch(self):
         self.execute_game_test(WMGame(), WMNNetWrapper, name="temp.pth1024.tar")

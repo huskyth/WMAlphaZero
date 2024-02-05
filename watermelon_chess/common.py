@@ -11,7 +11,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 MENU = 'resources/images/menu.png'
-BACKGROUND = 'resources/images/watermelon.png'
 QUERY_BKG = 'resources/images/queryBkg.png'
 BLACKTILE = 'resources/images/black.png'
 WHITETILE = 'resources/images/white.png'
@@ -54,6 +53,8 @@ DISTANCEPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/distance.txt')
 FONT = str(ROOT_PATH / 'watermelon_chess/resources/font/arial.ttf')
 MAPPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/pointPos.txt')
 MODEL_PATH = str(ROOT_PATH / "temp")
+
+BACKGROUND = str(ROOT_PATH / 'watermelon_chess/resources/images/watermelon.png')
 
 
 def getNeighboors(chessman, distance):
@@ -99,9 +100,9 @@ for from_point in range(21):
     to_point_list = sorted(to_point_list)
     for to_point in to_point_list:
         MOVE_LIST.append((from_point, to_point))
-for idx, move_string in enumerate(MOVE_LIST):
-    MOVE_TO_INDEX_DICT[move_string] = idx
-    INDEX_TO_MOVE_DICT[idx] = move_string
+for idx, move_tuple in enumerate(MOVE_LIST):
+    MOVE_TO_INDEX_DICT[move_tuple] = idx
+    INDEX_TO_MOVE_DICT[idx] = move_tuple
 
 # TODO://对于7x7的矩阵映射关系
 ARRAY_TO_IMAGE = {

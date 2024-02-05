@@ -16,7 +16,7 @@ from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, write
 from watermelon_chess.tensor_board_tool import MySummary
 
 log = logging.getLogger(__name__)
-my_summary = MySummary(use_wandb=True)
+my_summary = MySummary(use_wandb=False)
 
 
 class Coach:
@@ -38,7 +38,7 @@ class Coach:
 
     def write_file(self, episode_number, simulate_number, directory, board):
         name = directory / f"{simulate_number}_simulate_{episode_number}_step"
-        image = cv2.imread(str(ROOT_PATH / "watermelon_chess" / BACKGROUND))
+        image = cv2.imread(str(BACKGROUND))
         draw_chessmen(board, image, True, name)
 
     def create_procedure_directory(self, directory):
@@ -47,7 +47,7 @@ class Coach:
     def write_result(self, directory, is_peace, r):
         path = directory / "result.txt"
         if r != 0 or is_peace:
-            msg = f'胜负情况：{r != 0}, {"和棋" if is_peace else ""}'
+            msg = f'：{"Exist result" if r != 0 else "No Result"}, {"Is Draw" if is_peace else ""}'
             write_msg(msg, path)
 
     def executeEpisode(self, simulate_number, is_write):

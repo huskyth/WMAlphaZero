@@ -1,5 +1,4 @@
 import copy
-import time
 
 import Arena
 from MCTS import MCTS
@@ -7,7 +6,7 @@ from MCTS import MCTS
 import numpy as np
 from utils import *
 from watermelon_chess.alpha_zero_game import WMGame
-from watermelon_chess.common import DISTANCE, MODEL_PATH, MOVE_TO_INDEX_DICT, draw_chessmen, read_image, BACKGROUND
+from watermelon_chess.common import DISTANCE, MODEL_PATH, MOVE_TO_INDEX_DICT
 from watermelon_chess.control import computerMove
 from watermelon_chess.models.nn_net import WMNNetWrapper
 
@@ -31,8 +30,9 @@ class GreedyPlayer:
         point_status_copy = copy.deepcopy(point_status)
         a, _ = computerMove(point_status_copy, DISTANCE, level)
         if a is None:
-            print(point_status)
-            draw_chessmen(point_status, read_image(BACKGROUND), True, f"{time.time()}_{a}")
+            game = WMGame()
+            a = RandomPlayer(game).play(point_status)
+            return a
 
         a = MOVE_TO_INDEX_DICT[a]
         return a
@@ -63,7 +63,4 @@ class GamesEvaluate:
 
 
 if __name__ == '__main__':
-    # GamesEvaluate().wm_pytorch()
-    point_status = [0, 1, 1, 1, 1, 0, 0, -1, 1, 0, 0, 0, 0, -1, -1, 0, 1, -1, 0, -1, -1]
-    a = computerMove(point_status, DISTANCE, 1)
-    print(a)
+    GamesEvaluate().wm_pytorch()

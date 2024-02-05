@@ -31,7 +31,8 @@ class GreedyPlayer:
         point_status_copy = copy.deepcopy(point_status)
         a, _ = computerMove(point_status_copy, DISTANCE, level)
         if a is None:
-            draw_chessmen(point_status, read_image(BACKGROUND), False, f"{time.time()}_{a}")
+            print(point_status)
+            draw_chessmen(point_status, read_image(BACKGROUND), True, f"{time.time()}_{a}")
 
         a = MOVE_TO_INDEX_DICT[a]
         return a
@@ -62,4 +63,7 @@ class GamesEvaluate:
 
 
 if __name__ == '__main__':
-    GamesEvaluate().wm_pytorch()
+    # GamesEvaluate().wm_pytorch()
+    point_status = [0, 1, 1, 1, 1, 0, 0, -1, 1, 0, 0, 0, 0, -1, -1, 0, 1, -1, 0, -1, -1]
+    a = computerMove(point_status, DISTANCE, 1)
+    print(a)

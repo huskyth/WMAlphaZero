@@ -39,9 +39,8 @@ class MCTS():
                    proportional to Nsa[(s,a)]**(1./temp)
         """
         for i in range(self.args.numMCTSSims):
-            no_win_list = []
             no_change_num_list = [None, None]
-            self.search(canonicalBoard, no_win_list, no_change_num_list)
+            self.search(canonicalBoard, no_change_num_list)
 
         s = self.game.stringRepresentation(canonicalBoard)
         counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
@@ -59,29 +58,7 @@ class MCTS():
         return probs
 
     @staticmethod
-    def add_peace_list(no_win_list, value):
-        if len(no_win_list) < 12:
-            no_win_list.append(value)
-        else:
-            del no_win_list[0]
-            no_win_list.append(value)
-
-    @staticmethod
-    def judge_peace(no_win_list):
-        if len(no_win_list) != 12:
-            return False
-        temp = torch.tensor(no_win_list)
-        a = temp[:4]
-        b = temp[4:8]
-        c = temp[8:12]
-        if not a.equal(b):
-            return False
-        if not a.equal(c):
-            return False
-        return True
-
-    @staticmethod
-    def judge_peace_by_chessman_num(board, no_change_num_list):
+    def judge_peace_by_chessman_num(board, no_change_num_list, max_step=240):
         '''
             no_change_num = [前一次的数目，计数]
         '''
@@ -93,7 +70,7 @@ class MCTS():
             return False
         if sum_of_all == no_change_num_list[0]:
             no_change_num_list[1] += 1
-            if no_change_num_list[1] == 240:
+            if no_change_num_list[1] == max_step:
                 return True
         else:
             no_change_num_list[0] = sum_of_all
@@ -101,7 +78,7 @@ class MCTS():
             return False
         return False
 
-    def search(self, canonicalBoard, no_win_list, no_change_num_list):
+    def search(self, canonicalBoard, no_change_num_list):
         """
         This function performs one iteration of MCTS. It is recursively called
         till a leaf node is found. The action chosen at each node is one that
@@ -121,7 +98,7 @@ class MCTS():
             v: the negative of the value of the current canonicalBoard
         """
 
-        if MCTS.judge_peace(no_win_list) or MCTS.judge_peace_by_chessman_num(canonicalBoard, no_change_num_list):
+        if MCTS.judge_peace_by_chessman_num(canonicalBoard, no_change_num_list, max_step=100):
             return 0
 
         s = self.game.stringRepresentation(canonicalBoard)
@@ -173,8 +150,7 @@ class MCTS():
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
         next_s = self.game.getCanonicalForm(next_s, next_player)
-        MCTS.add_peace_list(no_win_list, a)
-        v = self.search(next_s, no_win_list, no_change_num_list)
+        v = self.search(next_s, no_change_num_list)
 
         if (s, a) in self.Qsa:
             self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)

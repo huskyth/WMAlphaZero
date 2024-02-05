@@ -43,10 +43,9 @@ class Arena:
         curPlayer = 1
         board = self.game.getInitBoard()
         it = 0
-        no_win_list = []
         no_change_num_list = [None, None]
         while self.game.getGameEnded(board, curPlayer) == 0:
-            is_peace = MCTS.judge_peace(no_win_list) or MCTS.judge_peace_by_chessman_num(board, no_change_num_list)
+            is_peace = MCTS.judge_peace_by_chessman_num(board, no_change_num_list, max_step=100)
             if is_peace:
                 return 0
             it += 1
@@ -57,7 +56,6 @@ class Arena:
             action = players[curPlayer + 1](self.game.getCanonicalForm(board, curPlayer))
 
             valids = self.game.getValidMoves(self.game.getCanonicalForm(board, curPlayer), 1)
-            MCTS.add_peace_list(no_win_list, action)
             if valids[action] == 0:
                 log.error(f'Action {action} is not valid!')
                 log.debug(f'valids = {valids}')

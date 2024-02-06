@@ -68,7 +68,7 @@ class GamesEvaluate:
         print(f"n1p won {one_won}, n2p Won {two_won}, peace {draws}, win_rate {win_rate}")
 
     def wm_pytorch(self):
-        self.execute_game_test(WMGame(), WMNNetWrapper, name_1="best.pth.tar")
+        self.execute_game_test(WMGame(), WMNNetWrapper, name_1="best.pth.tar", name_2="best.pth.tar")
 
 
 if __name__ == '__main__':

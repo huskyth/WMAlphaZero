@@ -158,13 +158,13 @@ class Coach:
             self.nnet.train(trainExamples, i)
             nmcts = MCTS(self.game, self.nnet, self.args)
 
-            second_player = RandomPlayer(self.game).play
-            second_mcts_player = lambda x: np.argmax(nmcts.getActionProb(x, temp=0))
+            second_player = lambda x: np.argmax(nmcts.getActionProb(x, temp=0))
 
+            first_player = RandomPlayer(self.game).play
             log.info('PITTING AGAINST PREVIOUS VERSION')
-            arena = Arena(lambda x: np.argmax(pmcts.getActionProb(x, temp=0)),
+            arena = Arena(first_player,
                           second_player, self.game)
-            pwins, nwins, draws = arena.playGames(self.args.arenaCompare)
+            pwins, nwins, draws = arena.playGames(self.args.arenaCompare, iter=i)
             my_summary.add_float(x=i, y=i, title="Epoch", x_name="epoch")
             my_summary.add_float(x=i, y=nwins, title="New Wins", x_name="epoch")
             my_summary.add_float(x=i, y=pwins, title="PREV Wins", x_name="epoch")

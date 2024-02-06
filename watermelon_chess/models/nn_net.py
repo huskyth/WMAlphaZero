@@ -4,7 +4,6 @@ import time
 import numpy as np
 from tqdm import tqdm
 
-from Coach import my_summary
 from utils import *
 from NeuralNet import NeuralNet
 
@@ -12,6 +11,7 @@ import torch
 import torch.optim as optim
 
 from watermelon_chess.models.wm_nnet import WMNNet
+from watermelon_chess.tensor_board_tool import my_summary
 
 args = dotdict({
     'lr': 0.001,

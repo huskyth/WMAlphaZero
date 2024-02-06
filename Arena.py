@@ -3,6 +3,7 @@ import logging
 from tqdm import tqdm
 
 from MCTS import MCTS
+from watermelon_chess.tensor_board_tool import my_summary
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ class Arena:
         self.game = game
         self.display = display
 
-    def playGame(self, verbose=False):
+    def playGame(self, verbose=False, iter=0):
         """
         Executes one episode of a game.
 
@@ -47,6 +48,7 @@ class Arena:
         while self.game.getGameEnded(board, curPlayer) == 0:
             is_peace = MCTS.judge_peace_by_chessman_num(board, no_change_num_list, max_step=1000)
             if is_peace:
+                my_summary.add_float(x=iter, y=it, title="Play(Test) Length", x_name="iter")
                 return 0
             it += 1
             if verbose:
@@ -65,9 +67,10 @@ class Arena:
             assert self.display
             print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
             self.display(board)
+        my_summary.add_float(x=iter, y=it, title="Play(Test) Length", x_name="iter")
         return curPlayer * self.game.getGameEnded(board, curPlayer)
 
-    def playGames(self, num, verbose=False):
+    def playGames(self, num, verbose=False, iter=-1):
         """
         Plays num games in which player1 starts num/2 games and player2 starts
         num/2 games.
@@ -82,8 +85,8 @@ class Arena:
         oneWon = 0
         twoWon = 0
         draws = 0
-        for _ in tqdm(range(num), desc="Arena.playGames (1)"):
-            gameResult = self.playGame(verbose=verbose)
+        for i in tqdm(range(num), desc="Arena.playGames (1)"):
+            gameResult = self.playGame(verbose=verbose, iter=iter * num * 2 + i)
             if gameResult == 1:
                 oneWon += 1
             elif gameResult == -1:
@@ -93,8 +96,8 @@ class Arena:
 
         self.player1, self.player2 = self.player2, self.player1
 
-        for _ in tqdm(range(num), desc="Arena.playGames (2)"):
-            gameResult = self.playGame(verbose=verbose)
+        for j in tqdm(range(num), desc="Arena.playGames (2)"):
+            gameResult = self.playGame(verbose=verbose, iter=iter * num * 2 + num + j)
             if gameResult == -1:
                 oneWon += 1
             elif gameResult == 1:

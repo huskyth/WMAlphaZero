@@ -14,6 +14,7 @@ from MCTS import MCTS
 from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, draw_chessmen, BACKGROUND, \
     write_msg
 from watermelon_chess.tensor_board_tool import MySummary
+from watermelon_chess.wm_games_evaluater import RandomPlayer
 
 log = logging.getLogger(__name__)
 my_summary = MySummary(use_wandb=True)
@@ -158,9 +159,12 @@ class Coach:
             self.nnet.train(trainExamples, i)
             nmcts = MCTS(self.game, self.nnet, self.args)
 
+            second_player = RandomPlayer(self.game).play
+            second_mcts_player = lambda x: np.argmax(nmcts.getActionProb(x, temp=0))
+
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(lambda x: np.argmax(pmcts.getActionProb(x, temp=0)),
-                          lambda x: np.argmax(nmcts.getActionProb(x, temp=0)), self.game)
+                          second_player, self.game)
             pwins, nwins, draws = arena.playGames(self.args.arenaCompare)
             my_summary.add_float(x=i, y=i, title="Epoch", x_name="epoch")
             my_summary.add_float(x=i, y=nwins, title="New Wins", x_name="epoch")

@@ -45,7 +45,7 @@ class Arena:
         it = 0
         no_change_num_list = [None, None]
         while self.game.getGameEnded(board, curPlayer) == 0:
-            is_peace = MCTS.judge_peace_by_chessman_num(board, no_change_num_list, max_step=100)
+            is_peace = MCTS.judge_peace_by_chessman_num(board, no_change_num_list, max_step=1000)
             if is_peace:
                 return 0
             it += 1

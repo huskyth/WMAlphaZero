@@ -13,11 +13,10 @@ from Arena import Arena
 from MCTS import MCTS
 from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, draw_chessmen, BACKGROUND, \
     write_msg
-from watermelon_chess.tensor_board_tool import MySummary
+from watermelon_chess.tensor_board_tool import my_summary
 from watermelon_chess.wm_games_evaluater import RandomPlayer
 
 log = logging.getLogger(__name__)
-my_summary = MySummary(use_wandb=True)
 
 
 class Coach:
@@ -92,7 +91,7 @@ class Coach:
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
 
             r = self.game.getGameEnded(board, self.curPlayer)
-            is_peace = MCTS.judge_peace_by_chessman_num(board, no_change_num_list, max_step=666)
+            is_peace = MCTS.judge_peace_by_chessman_num(board, no_change_num_list, max_step=160)
             if is_write:
                 self.write_result(directory, is_peace, r)
                 self.write_file(episodeStep, simulate_number, directory, board)

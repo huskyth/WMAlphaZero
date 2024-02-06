@@ -91,7 +91,7 @@ class Coach:
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
 
             r = self.game.getGameEnded(board, self.curPlayer)
-            is_peace = MCTS.judge_peace_by_chessman_num(board, no_change_num_list, max_step=160)
+            is_peace = MCTS.judge_peace_by_chessman_num(board, no_change_num_list)
             if is_write:
                 self.write_result(directory, is_peace, r)
                 self.write_file(episodeStep, simulate_number, directory, board)

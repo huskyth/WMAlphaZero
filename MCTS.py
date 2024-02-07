@@ -58,7 +58,7 @@ class MCTS():
         return probs
 
     @staticmethod
-    def judge_peace_by_chessman_num(board, no_change_num_list, max_step=666):
+    def judge_peace_by_chessman_num(board, no_change_num_list, max_step=1200):
         '''
             no_change_num = [前一次的数目，计数]
         '''
@@ -98,7 +98,7 @@ class MCTS():
             v: the negative of the value of the current canonicalBoard
         """
 
-        if MCTS.judge_peace_by_chessman_num(canonicalBoard, no_change_num_list):
+        if MCTS.judge_peace_by_chessman_num(canonicalBoard, no_change_num_list, max_step=100):
             return 0
 
         s = self.game.stringRepresentation(canonicalBoard)

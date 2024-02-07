@@ -160,7 +160,7 @@ class Coach:
 
             second_player = lambda x: np.argmax(nmcts.getActionProb(x, temp=0))
 
-            first_player = RandomPlayer(self.game).play
+            first_player = lambda x: np.argmax(pmcts.getActionProb(x, temp=0))
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(first_player,
                           second_player, self.game)

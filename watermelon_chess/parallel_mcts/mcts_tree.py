@@ -1,12 +1,10 @@
 import asyncio
 from asyncio import Queue
-from collections import defaultdict
 
 import numpy as np
 
-from threading import Lock
-
-from watermelon_chess.parallel_mcts.leaf_node import leaf_node
+from watermelon_chess.alpha_zero_board import WMBoard
+from watermelon_chess.parallel_mcts.leaf_node import LeafNode
 
 
 class ParallelMCTS:
@@ -14,7 +12,7 @@ class ParallelMCTS:
         self.noise_eps = 0.25
         self.dirichlet_alpha = 0.3  # 0.03
         self.p_ = (1 - self.noise_eps) * 1 + self.noise_eps * np.random.dirichlet([self.dirichlet_alpha])
-        self.root = leaf_node(None, self.p_, in_state)
+        self.root = LeafNode(None, self.p_, in_state)
         self.c_puct = 5  # 1.5
         self.forward = in_forward
 
@@ -22,15 +20,17 @@ class ParallelMCTS:
         self.now_expanding = set()
         self.expanded = set()
         self.cut_off_depth = 30
-        # self.QueueItem = namedtuple("QueueItem", "feature future")
         self.sem = asyncio.Semaphore(search_threads)
         self.queue = Queue(search_threads)
         self.loop = asyncio.get_event_loop()
         self.running_simulation_num = 0
 
     def reload(self):
-        self.root = leaf_node(None, self.p_,
-                              "RNBAKABNR/9/1C5C1/P1P1P1P1P/9/9/p1p1p1p1p/1c5c1/9/rnbakabnr")  # "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR"
+        state = WMBoard().pointStatus
+        state = [str(t) for t in state]
+        state = ''.join(state)
+        self.root = LeafNode(None, self.p_,
+                             state)
         self.expanded = set()
 
     def Q(self, move) -> float:

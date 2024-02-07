@@ -9,6 +9,13 @@ import numpy as np
 
 from pathlib import Path
 import matplotlib.pyplot as plt
+import torch
+
+
+def create_directory(path):
+    if not os.path.exists(str(path)):
+        os.mkdir(str(path))
+
 
 MENU = 'resources/images/menu.png'
 QUERY_BKG = 'resources/images/queryBkg.png'
@@ -53,7 +60,8 @@ DISTANCEPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/distance.txt')
 FONT = str(ROOT_PATH / 'watermelon_chess/resources/font/arial.ttf')
 MAPPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/pointPos.txt')
 MODEL_PATH = str(ROOT_PATH / "temp")
-
+GREEDY_PATH = str(ROOT_PATH / "greedy")
+create_directory(GREEDY_PATH)
 BACKGROUND = str(ROOT_PATH / 'watermelon_chess/resources/images/watermelon.png')
 
 
@@ -124,11 +132,6 @@ def from_array_to_input_tensor(numpy_array):
         row, column = ARRAY_TO_IMAGE[i]
         input_tensor[row, column] = chessman
     return input_tensor
-
-
-def create_directory(path):
-    if not os.path.exists(str(path)):
-        os.mkdir(str(path))
 
 
 def draw_circle(image, x, y, color):
@@ -237,6 +240,15 @@ def write_msg(msg, path, is_append=True):
 def bar_show(data):
     plt.bar(range(len(data)), data)
     plt.show()
+
+
+def serialize(path, value):
+    torch.save(value, path)
+
+
+def deserialize(path):
+    value = torch.load(path)
+    return value
 
 
 if __name__ == '__main__':

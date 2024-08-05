@@ -227,8 +227,6 @@ def write_video(frame_list, file_name, fps=0.5):
 
 PROCEDURE_PATH = ROOT_PATH / "training_procedure"
 create_directory(PROCEDURE_PATH)
-PROCEDURE_DIRECTORY = PROCEDURE_PATH / str(time.time())
-create_directory(PROCEDURE_DIRECTORY)
 
 
 def write_msg(msg, path, is_append=True):

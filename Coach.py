@@ -11,8 +11,8 @@ from tqdm import tqdm
 
 from Arena import Arena
 from MCTS import MCTS
-from watermelon_chess.common import PROCEDURE_DIRECTORY, create_directory, draw_chessmen, BACKGROUND, \
-    write_msg
+from watermelon_chess.common import create_directory, draw_chessmen, BACKGROUND, \
+    write_msg, PROCEDURE_PATH
 from watermelon_chess.tensor_board_tool import my_summary
 from watermelon_chess.wm_games_evaluater import RandomPlayer
 
@@ -35,7 +35,7 @@ class Coach:
         self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
 
     def write_file(self, episode_number, simulate_number, board):
-        simulate_directory = PROCEDURE_DIRECTORY / str(simulate_number)
+        simulate_directory = PROCEDURE_PATH / str(simulate_number)
         self.create_procedure_directory(simulate_directory)
 
         directory = simulate_directory / str(episode_number)

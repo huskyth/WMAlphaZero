@@ -235,9 +235,12 @@ def write_msg(msg, path, is_append=True):
         file.write(msg + "\n")
 
 
-def bar_show(data):
-    plt.bar(range(len(data)), data)
-    plt.show()
+def bar_show(x, y, is_show=False, name="test.png"):
+    plt.grid()
+    plt.bar(x, y)
+    plt.savefig(name)
+    if is_show:
+        plt.show()
 
 
 def serialize(path, value):
@@ -252,7 +255,8 @@ def deserialize(path):
 if __name__ == '__main__':
     n = len(MOVE_TO_INDEX_DICT)
     data = np.random.normal(0, 1, n)
-    bar_show(data)
+    x = np.arange(0, 72, 1)
+    bar_show(x, data)
     max_action = np.argmax(data)
     print(max_action, data[max_action])
     print(INDEX_TO_MOVE_DICT[max_action])

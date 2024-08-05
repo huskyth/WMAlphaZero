@@ -77,6 +77,9 @@ class MCTS():
             return False
         return False
 
+    def write_file(self, simulate_number, board):
+        assert False
+
     def search(self, canonicalBoard):
         """
         This function performs one iteration of MCTS. It is recursively called

@@ -98,9 +98,6 @@ class MCTS():
             v: the negative of the value of the current canonicalBoard
         """
 
-        if MCTS.judge_peace_by_chessman_num(canonicalBoard, no_change_num_list, max_step=100):
-            return 0
-
         s = self.game.stringRepresentation(canonicalBoard)
 
         if s not in self.Es:

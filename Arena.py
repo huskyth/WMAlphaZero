@@ -44,12 +44,7 @@ class Arena:
         curPlayer = 1
         board = self.game.getInitBoard()
         it = 0
-        no_change_num_list = [None, None]
         while self.game.getGameEnded(board, curPlayer) == 0:
-            is_peace = MCTS.judge_peace_by_chessman_num(board, no_change_num_list)
-            if is_peace:
-                my_summary.add_float(x=iter, y=it, title="Play(Test) Length", x_name="iter")
-                return 0
             it += 1
             if verbose:
                 assert self.display
@@ -67,7 +62,7 @@ class Arena:
             assert self.display
             print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
             self.display(board)
-        my_summary.add_float(x=iter, y=it, title="Play(Test) Length", x_name="iter")
+        my_summary.add_float(x=iter, y=it, title="Play(Test) Length")
         return curPlayer * self.game.getGameEnded(board, curPlayer)
 
     def playGames(self, num, verbose=False, iter=-1):

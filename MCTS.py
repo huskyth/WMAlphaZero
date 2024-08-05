@@ -31,6 +31,8 @@ class MCTS():
         self.Es = {}  # stores game.getGameEnded ended for board s
         self.Vs = {}  # stores game.getValidMoves for board s
 
+        self.VL = {}  # stores game.getValidMoves for board s
+
     def getActionProb(self, canonicalBoard, temp=1, epoch_idx=-1, self_play_idx=-1):
         """
         This function performs numMCTSSims simulations of MCTS starting from
@@ -156,9 +158,10 @@ class MCTS():
         # pick the action with the highest upper confidence bound
         for a in range(self.game.getActionSize()):
             if valids[a]:
+                visual_loss = self.VL[(s, a)] if (s, a) in self.VL else 0
                 if (s, a) in self.Qsa:
                     u = self.Qsa[(s, a)] + self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s]) / (
-                            1 + self.Nsa[(s, a)])
+                            1 + self.Nsa[(s, a)]) - visual_loss / (1 + self.Nsa[(s, a)])
                     temp_u.append(u[0])
                 else:
                     u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)  # Q = 0 ?
@@ -178,8 +181,12 @@ class MCTS():
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
         next_s = self.game.getCanonicalForm(next_s, next_player)
+        if (s, a) in self.VL:
+            self.VL[(s, a)] += 1
+        else:
+            self.VL[(s, a)] = 1
         v = self.search(next_s, epoch_idx, self_play_idx, search_idx, depth + 1)
-
+        self.VL[(s, a)] -= 1
         if (s, a) in self.Qsa:
             self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)
             self.Nsa[(s, a)] += 1

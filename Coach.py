@@ -33,15 +33,21 @@ class Coach:
         self.mcts = MCTS(self.game, self.nnet, self.args)
         self.trainExamplesHistory = []  # history of examples from args.numItersForTrainExamplesHistory latest iterations
         self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
-        self.not_peace_sum = 0
 
-    def write_file(self, episode_number, simulate_number, directory, board):
-        name = directory / f"{simulate_number}_simulate_{episode_number}_step"
+    def write_file(self, episode_number, simulate_number, board):
+        simulate_directory = PROCEDURE_DIRECTORY / str(simulate_number)
+        self.create_procedure_directory(simulate_directory)
+
+        directory = simulate_directory / str(episode_number)
+        self.create_procedure_directory(directory)
+
+        name = directory / f"chess_board_{simulate_number}_{episode_number}"
         image = cv2.imread(str(BACKGROUND))
         draw_chessmen(board, image, True, name)
 
     def create_procedure_directory(self, directory):
-        create_directory(directory)
+        if not os.path.exists(directory):
+            create_directory(directory)
 
     def write_result(self, directory, is_peace, r):
         path = directory / "result.txt"
@@ -65,10 +71,6 @@ class Coach:
                            pi is the MCTS informed policy vector, v is +1 if
                            the player eventually won the game, else -1.
         """
-        directory = None
-        if is_write:
-            directory = PROCEDURE_DIRECTORY / str(simulate_number)
-            self.create_procedure_directory(directory)
         trainExamples = []
         board = self.game.getInitBoard()
         self.curPlayer = 1
@@ -89,13 +91,9 @@ class Coach:
 
             r = self.game.getGameEnded(board, self.curPlayer)
             if is_write:
-                self.write_file(episodeStep, simulate_number, directory, board)
+                self.write_file(episodeStep, simulate_number, board)
             if r != 0:
-                self.not_peace_sum += 1
-            if r != 0:
-                my_summary.add_float(x=simulate_number, y=episodeStep, title="Episode Length", x_name="simulate_number")
-                my_summary.add_float(x=simulate_number, y=self.not_peace_sum, title="Win Or Lose Times",
-                                     x_name="simulate_number")
+                my_summary.add_float(x=simulate_number, y=episodeStep, title="Episode Length")
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def _is_write(self):

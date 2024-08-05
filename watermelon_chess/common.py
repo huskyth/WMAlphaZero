@@ -240,6 +240,7 @@ def write_msg(msg, path, is_append=True):
 
 def bar_show(x, y, is_show=False, name="test.png"):
     plt.grid()
+    plt.xticks(x)
     plt.bar(x, y)
     plt.savefig(name)
     if is_show:

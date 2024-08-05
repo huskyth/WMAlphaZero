@@ -35,7 +35,7 @@ class MySummary:
         self.writer.close()
 
 
-my_summary = MySummary(use_wandb=True)
+my_summary = MySummary(use_wandb=False)
 
 if __name__ == '__main__':
     test = MySummary()

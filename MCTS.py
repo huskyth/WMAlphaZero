@@ -81,23 +81,23 @@ class MCTS():
 
     def write_file(self, epoch_idx=-1, self_play_idx=-1, search_idx=-1, board=None, key="", depth=-1, x=None, y=None,
                    type_str=None):
-        epoch_directory = DISTRIBUTION_PATH / key + str(epoch_idx)
+        epoch_directory = DISTRIBUTION_PATH / (key + "_epoch_" + str(epoch_idx))
         create_directory(epoch_directory)
 
-        self_play_directory = epoch_directory / key + str(self_play_idx)
+        self_play_directory = epoch_directory / (key + "_self_play_" + str(self_play_idx))
         create_directory(self_play_directory)
 
-        search_directory = self_play_directory / key + str(search_idx)
+        search_directory = self_play_directory / (key + "_search_" + str(search_idx))
         create_directory(search_directory)
 
-        depth_directory = search_directory / key + str(depth)
+        depth_directory = search_directory / (key + "_depth_" + str(depth))
         create_directory(depth_directory)
 
         name = depth_directory / f"distribute_{type_str}"
         image = cv2.imread(str(BACKGROUND))
-        draw_chessmen(board, image, True, name)
+        draw_chessmen(board, image, True, str(name) + "_image")
 
-        bar_show(x, y, is_show=False, name=name + "png")
+        bar_show(x, y, is_show=False, name=str(name) + ".png")
 
     def search(self, canonicalBoard, epoch_idx=-1, self_play_idx=-1, search_idx=-1, depth=-1):
         """
@@ -159,10 +159,12 @@ class MCTS():
                 if (s, a) in self.Qsa:
                     u = self.Qsa[(s, a)] + self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s]) / (
                             1 + self.Nsa[(s, a)])
+                    temp_u.append(u[0])
                 else:
                     u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)  # Q = 0 ?
+                    temp_u.append(u)
                 temp_x.append(a)
-                temp_u.append(u)
+
                 temp_n.append(self.Nsa[(s, a)] if (s, a) in self.Nsa else -1)
                 if u > cur_best:
                     cur_best = u

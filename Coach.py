@@ -35,13 +35,13 @@ class Coach:
         self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
 
     def write_file(self, epoch_idx, step, self_play_idx, board, key):
-        epoch_directory = PROCEDURE_PATH / key + str(epoch_idx)
+        epoch_directory = PROCEDURE_PATH / (key + "_epoch_" + str(epoch_idx))
         self.create_procedure_directory(epoch_directory)
 
-        self_play_directory = epoch_directory / key + str(self_play_idx)
+        self_play_directory = epoch_directory / (key + "_self_play_" + str(self_play_idx))
         self.create_procedure_directory(self_play_directory)
 
-        step_directory = self_play_directory / key + str(step)
+        step_directory = self_play_directory / (key + "_step_" + str(step))
         self.create_procedure_directory(step_directory)
 
         name = step_directory / f"chess_board"

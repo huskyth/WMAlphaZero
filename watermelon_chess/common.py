@@ -244,6 +244,7 @@ def bar_show(x, y, is_show=False, name="test.png"):
     plt.savefig(name)
     if is_show:
         plt.show()
+    plt.close()
 
 
 def serialize(path, value):

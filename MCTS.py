@@ -1,11 +1,13 @@
 import logging
 import math
 
+import cv2
 import numpy as np
 
 from utils import dotdict
 from watermelon_chess.alpha_zero_game import WMGame
-from watermelon_chess.common import WHITE, BLACK, INDEX_TO_MOVE_DICT
+from watermelon_chess.common import WHITE, BLACK, INDEX_TO_MOVE_DICT, draw_chessmen, BACKGROUND, DISTRIBUTION_PATH, \
+    create_directory, bar_show
 
 EPS = 1e-8
 
@@ -29,7 +31,7 @@ class MCTS():
         self.Es = {}  # stores game.getGameEnded ended for board s
         self.Vs = {}  # stores game.getValidMoves for board s
 
-    def getActionProb(self, canonicalBoard, temp=1):
+    def getActionProb(self, canonicalBoard, temp=1, epoch_idx=-1, self_play_idx=-1):
         """
         This function performs numMCTSSims simulations of MCTS starting from
         canonicalBoard.
@@ -39,7 +41,7 @@ class MCTS():
                    proportional to Nsa[(s,a)]**(1./temp)
         """
         for i in range(self.args.numMCTSSims):
-            self.search(canonicalBoard)
+            self.search(canonicalBoard, epoch_idx, self_play_idx, i, 0)
 
         s = self.game.stringRepresentation(canonicalBoard)
         counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
@@ -77,10 +79,27 @@ class MCTS():
             return False
         return False
 
-    def write_file(self, simulate_number, board):
-        assert False
+    def write_file(self, epoch_idx=-1, self_play_idx=-1, search_idx=-1, board=None, key="", depth=-1, x=None, y=None,
+                   type_str=None):
+        epoch_directory = DISTRIBUTION_PATH / key + str(epoch_idx)
+        create_directory(epoch_directory)
 
-    def search(self, canonicalBoard):
+        self_play_directory = epoch_directory / key + str(self_play_idx)
+        create_directory(self_play_directory)
+
+        search_directory = self_play_directory / key + str(search_idx)
+        create_directory(search_directory)
+
+        depth_directory = search_directory / key + str(depth)
+        create_directory(depth_directory)
+
+        name = depth_directory / f"distribute_{type_str}"
+        image = cv2.imread(str(BACKGROUND))
+        draw_chessmen(board, image, True, name)
+
+        bar_show(x, y, is_show=False, name=name + "png")
+
+    def search(self, canonicalBoard, epoch_idx=-1, self_play_idx=-1, search_idx=-1, depth=-1):
         """
         This function performs one iteration of MCTS. It is recursively called
         till a leaf node is found. The action chosen at each node is one that
@@ -133,6 +152,7 @@ class MCTS():
         cur_best = -float('inf')
         best_act = -1
 
+        temp_x, temp_u, temp_n = [], [], []
         # pick the action with the highest upper confidence bound
         for a in range(self.game.getActionSize()):
             if valids[a]:
@@ -141,15 +161,22 @@ class MCTS():
                             1 + self.Nsa[(s, a)])
                 else:
                     u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)  # Q = 0 ?
-
+                temp_x.append(a)
+                temp_u.append(u)
+                temp_n.append(self.Nsa[(s, a)] if (s, a) in self.Nsa else -1)
                 if u > cur_best:
                     cur_best = u
                     best_act = a
+        temp_x, temp_u, temp_n = np.array(temp_x), np.array(temp_u), np.array(temp_n)
+        self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_u,
+                        type_str="UValue")
+        self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_n,
+                        type_str="Count")
 
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
         next_s = self.game.getCanonicalForm(next_s, next_player)
-        v = self.search(next_s)
+        v = self.search(next_s, epoch_idx, self_play_idx, search_idx, depth + 1)
 
         if (s, a) in self.Qsa:
             self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)

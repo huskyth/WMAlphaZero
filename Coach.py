@@ -34,14 +34,17 @@ class Coach:
         self.trainExamplesHistory = []  # history of examples from args.numItersForTrainExamplesHistory latest iterations
         self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
 
-    def write_file(self, episode_number, simulate_number, board):
-        simulate_directory = PROCEDURE_PATH / str(simulate_number)
-        self.create_procedure_directory(simulate_directory)
+    def write_file(self, epoch_idx, step, self_play_idx, board, key):
+        epoch_directory = PROCEDURE_PATH / key + str(epoch_idx)
+        self.create_procedure_directory(epoch_directory)
 
-        directory = simulate_directory / str(episode_number)
-        self.create_procedure_directory(directory)
+        self_play_directory = epoch_directory / key + str(self_play_idx)
+        self.create_procedure_directory(self_play_directory)
 
-        name = directory / f"chess_board_{simulate_number}_{episode_number}"
+        step_directory = self_play_directory / key + str(step)
+        self.create_procedure_directory(step_directory)
+
+        name = step_directory / f"chess_board"
         image = cv2.imread(str(BACKGROUND))
         draw_chessmen(board, image, True, name)
 
@@ -55,7 +58,7 @@ class Coach:
             msg = f'：{"Exist result" if r != 0 else "No Result"}, {"Is Draw" if is_peace else ""}'
             write_msg(msg, path)
 
-    def executeEpisode(self, simulate_number, is_write):
+    def executeEpisode(self, epoch_idx, self_play_idx, is_write):
         """
         This function executes one episode of self-play, starting with player 1.
         As the game is played, each turn is added as a training example to
@@ -81,7 +84,7 @@ class Coach:
 
             temp = int(episodeStep < self.args.tempThreshold)
 
-            pi = self.mcts.getActionProb(canonicalBoard, temp=temp)
+            pi = self.mcts.getActionProb(canonicalBoard, temp=temp, epoch_idx=epoch_idx, self_play_idx=self_play_idx)
             sym = self.game.getSymmetries(canonicalBoard, pi)
             for b, p in sym:
                 trainExamples.append([b, self.curPlayer, p, None])
@@ -91,9 +94,10 @@ class Coach:
 
             r = self.game.getGameEnded(board, self.curPlayer)
             if is_write:
-                self.write_file(episodeStep, simulate_number, board)
+                self.write_file(epoch_idx, episodeStep, self_play_idx, board, "in_episode")
             if r != 0:
-                my_summary.add_float(x=simulate_number, y=episodeStep, title="Episode Length")
+                my_summary.add_float(x=epoch_idx * self.args.numEps + self_play_idx, y=episodeStep,
+                                     title="Episode Length")
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def _is_write(self):
@@ -118,9 +122,8 @@ class Coach:
                 iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
 
                 for idx in tqdm(range(self.args.numEps), desc="Self Play"):
-                    simulate_number = i * self.args.numEps + idx
                     self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
-                    iterationTrainExamples += self.executeEpisode(simulate_number, self._is_write())
+                    iterationTrainExamples += self.executeEpisode(i, idx, self._is_write())
 
                 # save the iteration examples to the history
                 self.trainExamplesHistory.append(iterationTrainExamples)

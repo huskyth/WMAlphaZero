@@ -228,6 +228,9 @@ def write_video(frame_list, file_name, fps=0.5):
 PROCEDURE_PATH = ROOT_PATH / "training_procedure"
 create_directory(PROCEDURE_PATH)
 
+DISTRIBUTION_PATH = ROOT_PATH / "distribution"
+create_directory(DISTRIBUTION_PATH)
+
 
 def write_msg(msg, path, is_append=True):
     mode = 'a' if is_append else 'w'

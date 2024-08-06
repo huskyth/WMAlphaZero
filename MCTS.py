@@ -164,6 +164,7 @@ class MCTS():
                 if (s, a) in self.Qsa:
                     u = self.Qsa[(s, a)] + self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s]) / (
                             1 + self.Nsa[(s, a)]) - visual_loss
+                    print(f"u = {u}, and U0 = {u[0]}")
                     temp_u.append(u[0])
                 else:
                     u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS) - visual_loss  # Q = 0 ?

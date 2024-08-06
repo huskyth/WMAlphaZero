@@ -160,12 +160,13 @@ class MCTS():
         for a in range(self.game.getActionSize()):
             if valids[a]:
                 visual_loss = self.VL[(s, a)] if (s, a) in self.VL else 0
+                visual_loss = visual_loss / (1 + self.Nsa[(s, a)]) if (s, a) in self.Nsa else visual_loss
                 if (s, a) in self.Qsa:
                     u = self.Qsa[(s, a)] + self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s]) / (
-                            1 + self.Nsa[(s, a)]) - visual_loss / (1 + self.Nsa[(s, a)])
+                            1 + self.Nsa[(s, a)]) - visual_loss
                     temp_u.append(u[0])
                 else:
-                    u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)  # Q = 0 ?
+                    u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS) - visual_loss  # Q = 0 ?
                     temp_u.append(u)
                 temp_x.append(a)
 

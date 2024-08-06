@@ -6,6 +6,7 @@ class WMBoard(ChessBoard):
 
     def __init__(self):
         super().__init__()
+        self.is_simple = True
 
     # TODO:// test it
     def execute_move(self, move, color):
@@ -43,6 +44,12 @@ class WMBoard(ChessBoard):
                 black_num += 1
             elif color == WHITE:
                 white_num += 1
+        if self.is_simple:
+            if white_num > black_num:
+                return WHITE
+            elif white_num < black_num:
+                return BLACK
+            return None
         if black_num < 3 or white_num < 3:
             if black_num < 3:
                 winner = WHITE

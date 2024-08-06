@@ -97,7 +97,7 @@ class Coach:
                 self.write_file(epoch_idx, episodeStep, self_play_idx, board, "in_episode")
             if r != 0:
                 my_summary.add_float(x=epoch_idx * self.args.numEps + self_play_idx, y=episodeStep,
-                                     title="Episode Length")
+                                     title="Steps of one episode in Play(Training stage)")
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def _is_write(self):
@@ -157,10 +157,10 @@ class Coach:
             arena = Arena(first_player,
                           second_player, self.game)
             pwins, nwins, draws = arena.playGames(self.args.arenaCompare, iter=i)
-            my_summary.add_float(x=i, y=i, title="Epoch")
-            my_summary.add_float(x=i, y=nwins, title="New Wins")
-            my_summary.add_float(x=i, y=pwins, title="PREV Wins")
-            my_summary.add_float(x=i, y=draws, title="Draws")
+            my_summary.add_float(x=i, y=i, title="Training Epoch")
+            my_summary.add_float(x=i, y=nwins, title="New Player Winning times")
+            my_summary.add_float(x=i, y=pwins, title="Old Player Wining times")
+            my_summary.add_float(x=i, y=draws, title="Draws times")
 
             log.info('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwins, pwins, draws))
             if pwins + nwins == 0 or float(nwins) / (pwins + nwins) < self.args.updateThreshold:
@@ -174,7 +174,7 @@ class Coach:
                 win_rate = -1
             else:
                 win_rate = float(nwins) / (pwins + nwins)
-            my_summary.add_float(x=i, y=win_rate, title="Win Rate")
+            my_summary.add_float(x=i, y=win_rate, title="Winning Rate")
 
     def getCheckpointFile(self, iteration):
         return 'checkpoint_' + str(iteration) + '.pth.tar'

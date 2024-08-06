@@ -80,9 +80,9 @@ class WMNNetWrapper(NeuralNet):
                 optimizer.zero_grad()
                 total_loss.backward()
                 optimizer.step()
-            my_summary.add_float(x=step, y=pi_losses.avg, title="Pi Loss")
-            my_summary.add_float(x=step, y=v_losses.avg, title="Value Loss")
-            my_summary.add_float(x=step, y=pi_accuracy.avg, title="Pi Accuracy")
+            my_summary.add_float(x=step, y=pi_losses.avg, title="Policy Average Loss")
+            my_summary.add_float(x=step, y=v_losses.avg, title="Value Average Loss")
+            my_summary.add_float(x=step, y=pi_accuracy.avg, title="Policy Average Accuracy")
 
     def predict(self, board):
         """

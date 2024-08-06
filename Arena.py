@@ -62,7 +62,7 @@ class Arena:
             assert self.display
             print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
             self.display(board)
-        my_summary.add_float(x=iter, y=it, title="Play(Test) Length")
+        my_summary.add_float(x=iter, y=it, title="Steps of one episode in Play(Testing stage)")
         return curPlayer * self.game.getGameEnded(board, curPlayer)
 
     def playGames(self, num, verbose=False, iter=-1):

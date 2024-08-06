@@ -157,10 +157,10 @@ class Coach:
             arena = Arena(first_player,
                           second_player, self.game)
             pwins, nwins, draws = arena.playGames(self.args.arenaCompare, iter=i)
-            my_summary.add_float(x=i, y=i, title="Epoch", x_name="epoch")
-            my_summary.add_float(x=i, y=nwins, title="New Wins", x_name="epoch")
-            my_summary.add_float(x=i, y=pwins, title="PREV Wins", x_name="epoch")
-            my_summary.add_float(x=i, y=draws, title="Draws", x_name="epoch")
+            my_summary.add_float(x=i, y=i, title="Epoch")
+            my_summary.add_float(x=i, y=nwins, title="New Wins")
+            my_summary.add_float(x=i, y=pwins, title="PREV Wins")
+            my_summary.add_float(x=i, y=draws, title="Draws")
 
             log.info('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwins, pwins, draws))
             if pwins + nwins == 0 or float(nwins) / (pwins + nwins) < self.args.updateThreshold:
@@ -174,7 +174,7 @@ class Coach:
                 win_rate = -1
             else:
                 win_rate = float(nwins) / (pwins + nwins)
-            my_summary.add_float(x=i, y=win_rate, title="Win Rate", x_name="epoch")
+            my_summary.add_float(x=i, y=win_rate, title="Win Rate")
 
     def getCheckpointFile(self, iteration):
         return 'checkpoint_' + str(iteration) + '.pth.tar'

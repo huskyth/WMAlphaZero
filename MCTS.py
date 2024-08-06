@@ -32,6 +32,7 @@ class MCTS():
         self.Vs = {}  # stores game.getValidMoves for board s
 
         self.VL = {}  # stores game.getValidMoves for board s
+        self.is_write = False
 
     def getActionProb(self, canonicalBoard, temp=1, epoch_idx=-1, self_play_idx=-1):
         """
@@ -173,10 +174,11 @@ class MCTS():
                     cur_best = u
                     best_act = a
         temp_x, temp_u, temp_n = np.array(temp_x), np.array(temp_u), np.array(temp_n)
-        self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_u,
-                        type_str="UValue")
-        self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_n,
-                        type_str="Count")
+        if self.is_write:
+            self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_u,
+                            type_str="UValue")
+            self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_n,
+                            type_str="Count")
 
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)

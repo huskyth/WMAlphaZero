@@ -149,7 +149,7 @@ class MCTS():
 
             self.Vs[s] = valids
             self.Ns[s] = 0
-            return -v
+            return -v.item()
 
         valids = self.Vs[s]
         cur_best = -float('inf')
@@ -163,15 +163,11 @@ class MCTS():
                 visual_loss = visual_loss / (1 + self.Nsa[(s, a)]) if (s, a) in self.Nsa else visual_loss
                 if (s, a) in self.Qsa:
                     u = self.Qsa[(s, a)] + self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s]) / (
-                            1 + self.Nsa[(s, a)]) - visual_loss
-                    try:
-                        temp_u.append(u[0])
-                    except Exception as e:
-                        print(f"raise {e}, u = {u}, type is {type(u)}, shape is {u.shape}")
-                        assert False
+                            1 + self.Nsa[(s, a)])
                 else:
-                    u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS) - visual_loss  # Q = 0 ?
-                    temp_u.append(u)
+                    u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS)  # Q = 0 ?
+                u -= visual_loss
+                temp_u.append(u)
                 temp_x.append(a)
 
                 temp_n.append(self.Nsa[(s, a)] if (s, a) in self.Nsa else -1)

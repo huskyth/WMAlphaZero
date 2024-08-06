@@ -167,7 +167,7 @@ class MCTS():
                     try:
                         temp_u.append(u[0])
                     except Exception as e:
-                        print(f"raise {e}, u = {u}")
+                        print(f"raise {e}, u = {u}, type is {type(u)}, shape is {u.shape}")
                         assert False
                 else:
                     u = self.args.cpuct * self.Ps[s][a] * math.sqrt(self.Ns[s] + EPS) - visual_loss  # Q = 0 ?

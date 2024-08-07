@@ -16,7 +16,7 @@ from watermelon_chess.tensor_board_tool import my_summary
 args = dotdict({
     'lr': 0.001,
     'dropout': 0.3,
-    'epochs': 15,
+    'epochs': 5,
     'batch_size': 64,
     'cuda': torch.cuda.is_available(),
     'num_channels': 512,

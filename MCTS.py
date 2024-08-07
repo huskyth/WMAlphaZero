@@ -4,7 +4,7 @@ import math
 import cv2
 import numpy as np
 
-from utils import dotdict, get_readable_time
+from utils import dotdict
 from watermelon_chess.alpha_zero_game import WMGame
 from watermelon_chess.common import WHITE, BLACK, INDEX_TO_MOVE_DICT, draw_chessmen, BACKGROUND, DISTRIBUTION_PATH, \
     create_directory, bar_show
@@ -32,7 +32,7 @@ class MCTS():
         self.Vs = {}  # stores game.getValidMoves for board s
 
         self.VL = {}  # stores game.getValidMoves for board s
-        self.is_write = True
+        self.is_write = False
 
     def getActionProb(self, canonicalBoard, temp=1, epoch_idx=-1, self_play_idx=-1, episode_step=-1,
                       train_or_test="training"):
@@ -100,7 +100,7 @@ class MCTS():
         root_directory = DISTRIBUTION_PATH / root_directory
         create_directory(root_directory)
 
-        step_directory = root_directory / f"{episode_step}th_time_step"
+        step_directory = root_directory / f"{episode_step}th_step"
         create_directory(step_directory)
 
         search_directory = step_directory / f"{search_idx}th_time_search"

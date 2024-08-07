@@ -35,7 +35,7 @@ class MCTS():
         self.is_write = False
 
     def getActionProb(self, canonicalBoard, temp=1, epoch_idx=-1, self_play_idx=-1, episode_step=-1,
-                      train_or_test="training"):
+                      train_or_test="training", player="None"):
         """
         This function performs numMCTSSims simulations of MCTS starting from
         canonicalBoard.
@@ -45,7 +45,7 @@ class MCTS():
                    proportional to Nsa[(s,a)]**(1./temp)
         """
         for i in range(self.args.numMCTSSims):
-            self.search(canonicalBoard, epoch_idx, self_play_idx, i, 0, episode_step, train_or_test)
+            self.search(canonicalBoard, epoch_idx, self_play_idx, i, 0, episode_step, train_or_test, player)
 
         s = self.game.stringRepresentation(canonicalBoard)
         counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
@@ -94,9 +94,9 @@ class MCTS():
                 f.write(content)
 
     def write_file(self, epoch_idx=-1, self_play_idx=-1, search_idx=-1, board=None, key="", depth=-1, x=None, y=None,
-                   type_str=None, episode_step=-1, train_or_test="training"):
+                   type_str=None, episode_step=-1, train_or_test="training", player="None"):
 
-        root_directory = f"{train_or_test}_epoch_{epoch_idx}_self_play_{self_play_idx}"
+        root_directory = f"{train_or_test}_epoch_{epoch_idx}_self_play_{self_play_idx}_{player}"
         root_directory = DISTRIBUTION_PATH / root_directory
         create_directory(root_directory)
 
@@ -112,13 +112,13 @@ class MCTS():
         name = depth_directory / f"distribute_{type_str}"
 
         self.write_txt(str(name) + '.txt', epoch_idx, self_play_idx, search_idx, board, key, depth, x, y, type_str)
-        image = cv2.imread(str(BACKGROUND))
-        draw_chessmen(board, image, True, str(name) + "_image")
-
-        bar_show(x, y, is_show=False, name=str(name) + ".png")
+        # image = cv2.imread(str(BACKGROUND))
+        # draw_chessmen(board, image, True, str(name) + "_image")
+        #
+        # bar_show(x, y, is_show=False, name=str(name) + ".png")
 
     def search(self, canonicalBoard, epoch_idx=-1, self_play_idx=-1, search_idx=-1, depth=-1, episode_step=-1,
-               train_or_test="training"):
+               train_or_test="training", player="None"):
         """
         This function performs one iteration of MCTS. It is recursively called
         till a leaf node is found. The action chosen at each node is one that
@@ -193,9 +193,9 @@ class MCTS():
         temp_x, temp_u, temp_n = np.array(temp_x), np.array(temp_u), np.array(temp_n)
         if train_or_test == 'testing' or self.is_write:
             self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_u,
-                            type_str="UValue", episode_step=episode_step, train_or_test=train_or_test)
+                            type_str="UValue", episode_step=episode_step, train_or_test=train_or_test, player=player)
             self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_n,
-                            type_str="Count", episode_step=episode_step, train_or_test=train_or_test)
+                            type_str="Count", episode_step=episode_step, train_or_test=train_or_test, player=player)
 
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
@@ -204,7 +204,7 @@ class MCTS():
             self.VL[(s, a)] += 1
         else:
             self.VL[(s, a)] = 1
-        v = self.search(next_s, epoch_idx, self_play_idx, search_idx, depth + 1, episode_step, train_or_test)
+        v = self.search(next_s, epoch_idx, self_play_idx, search_idx, depth + 1, episode_step, train_or_test, player)
         self.VL[(s, a)] -= 1
         if (s, a) in self.Qsa:
             self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)

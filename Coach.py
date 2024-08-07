@@ -152,10 +152,12 @@ class Coach:
             nmcts = MCTS(self.game, self.nnet, self.args)
 
             second_player = lambda x, episode_step: np.argmax(
-                nmcts.getActionProb(x, temp=0, epoch_idx=i, episode_step=episode_step, train_or_test='testing'))
+                nmcts.getActionProb(x, temp=0, epoch_idx=i, episode_step=episode_step, train_or_test='testing',
+                                    player="second_player"))
 
             first_player = lambda x, episode_step: np.argmax(
-                pmcts.getActionProb(x, temp=0, epoch_idx=i, episode_step=episode_step, train_or_test='testing'))
+                pmcts.getActionProb(x, temp=0, epoch_idx=i, episode_step=episode_step, train_or_test='testing',
+                                    player="first_player"))
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(first_player,
                           second_player, self.game)

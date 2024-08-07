@@ -84,7 +84,8 @@ class Coach:
 
             temp = int(episodeStep < self.args.tempThreshold)
 
-            pi = self.mcts.getActionProb(canonicalBoard, temp=temp, epoch_idx=epoch_idx, self_play_idx=self_play_idx)
+            pi = self.mcts.getActionProb(canonicalBoard, temp=temp, epoch_idx=epoch_idx, self_play_idx=self_play_idx,
+                                         episode_step=episodeStep)
             sym = self.game.getSymmetries(canonicalBoard, pi)
             for b, p in sym:
                 trainExamples.append([b, self.curPlayer, p, None])
@@ -150,9 +151,11 @@ class Coach:
             self.nnet.train(trainExamples, i)
             nmcts = MCTS(self.game, self.nnet, self.args)
 
-            second_player = lambda x: np.argmax(nmcts.getActionProb(x, temp=0))
+            second_player = lambda x, episode_step: np.argmax(
+                nmcts.getActionProb(x, temp=0, epoch_idx=i, episode_step=episode_step, train_or_test='testing'))
 
-            first_player = lambda x: np.argmax(pmcts.getActionProb(x, temp=0))
+            first_player = lambda x, episode_step: np.argmax(
+                pmcts.getActionProb(x, temp=0, epoch_idx=i, episode_step=episode_step, train_or_test='testing'))
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(first_player,
                           second_player, self.game)

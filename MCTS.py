@@ -32,9 +32,10 @@ class MCTS():
         self.Vs = {}  # stores game.getValidMoves for board s
 
         self.VL = {}  # stores game.getValidMoves for board s
-        self.is_write = False
+        self.is_write = True
 
-    def getActionProb(self, canonicalBoard, temp=1, epoch_idx=-1, self_play_idx=-1):
+    def getActionProb(self, canonicalBoard, temp=1, epoch_idx=-1, self_play_idx=-1, episode_step=-1,
+                      train_or_test="training"):
         """
         This function performs numMCTSSims simulations of MCTS starting from
         canonicalBoard.
@@ -44,7 +45,7 @@ class MCTS():
                    proportional to Nsa[(s,a)]**(1./temp)
         """
         for i in range(self.args.numMCTSSims):
-            self.search(canonicalBoard, epoch_idx, self_play_idx, i, 0)
+            self.search(canonicalBoard, epoch_idx, self_play_idx, i, 0, episode_step, train_or_test)
 
         s = self.game.stringRepresentation(canonicalBoard)
         counts = [self.Nsa[(s, a)] if (s, a) in self.Nsa else 0 for a in range(self.game.getActionSize())]
@@ -82,32 +83,42 @@ class MCTS():
             return False
         return False
 
+    def write_txt(self, path, epoch_idx=-1, self_play_idx=-1, search_idx=-1, board=None, key="", depth=-1, x=None,
+                  y=None,
+                  type_str=None):
+        with open(path, 'w') as f:
+            n = len(x)
+            for i in range(n):
+                x_item, y_item = x[i], y[i]
+                content = f"action_idx {x_item} {type_str} {y_item}\n"
+                f.write(content)
+
     def write_file(self, epoch_idx=-1, self_play_idx=-1, search_idx=-1, board=None, key="", depth=-1, x=None, y=None,
-                   type_str=None):
-        if epoch_idx == -1 and self_play_idx == -1:
-            key += "_testing_"
-        time_record_directory = DISTRIBUTION_PATH / (key + get_readable_time())
-        create_directory(time_record_directory)
+                   type_str=None, episode_step=-1, train_or_test="training"):
 
-        epoch_directory = time_record_directory / (key + "_epoch_" + str(epoch_idx))
-        create_directory(epoch_directory)
+        root_directory = f"{train_or_test}_epoch_{epoch_idx}_self_play_{self_play_idx}"
+        root_directory = DISTRIBUTION_PATH / root_directory
+        create_directory(root_directory)
 
-        self_play_directory = epoch_directory / (key + "_self_play_" + str(self_play_idx))
-        create_directory(self_play_directory)
+        step_directory = root_directory / f"{episode_step}th_time_step"
+        create_directory(step_directory)
 
-        search_directory = self_play_directory / (key + "_search_" + str(search_idx))
+        search_directory = step_directory / f"{search_idx}th_time_search"
         create_directory(search_directory)
 
         depth_directory = search_directory / (key + "_depth_" + str(depth))
         create_directory(depth_directory)
 
         name = depth_directory / f"distribute_{type_str}"
+
+        self.write_txt(str(name) + '.txt', epoch_idx, self_play_idx, search_idx, board, key, depth, x, y, type_str)
         image = cv2.imread(str(BACKGROUND))
         draw_chessmen(board, image, True, str(name) + "_image")
 
         bar_show(x, y, is_show=False, name=str(name) + ".png")
 
-    def search(self, canonicalBoard, epoch_idx=-1, self_play_idx=-1, search_idx=-1, depth=-1):
+    def search(self, canonicalBoard, epoch_idx=-1, self_play_idx=-1, search_idx=-1, depth=-1, episode_step=-1,
+               train_or_test="training"):
         """
         This function performs one iteration of MCTS. It is recursively called
         till a leaf node is found. The action chosen at each node is one that
@@ -180,11 +191,11 @@ class MCTS():
                     cur_best = u
                     best_act = a
         temp_x, temp_u, temp_n = np.array(temp_x), np.array(temp_u), np.array(temp_n)
-        if epoch_idx == -1 and self_play_idx == -1 or self.is_write:
+        if train_or_test == 'testing' or self.is_write:
             self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_u,
-                            type_str="UValue")
+                            type_str="UValue", episode_step=episode_step, train_or_test=train_or_test)
             self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_n,
-                            type_str="Count")
+                            type_str="Count", episode_step=episode_step, train_or_test=train_or_test)
 
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
@@ -193,7 +204,7 @@ class MCTS():
             self.VL[(s, a)] += 1
         else:
             self.VL[(s, a)] = 1
-        v = self.search(next_s, epoch_idx, self_play_idx, search_idx, depth + 1)
+        v = self.search(next_s, epoch_idx, self_play_idx, search_idx, depth + 1, episode_step, train_or_test)
         self.VL[(s, a)] -= 1
         if (s, a) in self.Qsa:
             self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)

@@ -50,7 +50,7 @@ class WMNNetWrapper(NeuralNet):
             batch_count = int(len(examples) / args.batch_size)
 
             t = tqdm(range(batch_count), desc='Training Net')
-            for _ in t:
+            for step in t:
                 sample_ids = np.random.randint(len(examples), size=args.batch_size)
                 boards, pis, vs = list(zip(*[examples[i] for i in sample_ids]))
                 boards = tuple([WMNNet.transfer_board(x) for x in boards])
@@ -72,8 +72,11 @@ class WMNNetWrapper(NeuralNet):
 
                 # record loss
                 pi_losses.update(l_pi.item(), boards.size(0))
+                print(f"epoch {epoch} step {step} policy loss {l_pi.item()} size {boards.size(0)}")
                 v_losses.update(l_v.item(), boards.size(0))
+                print(f"epoch {epoch} step {step} value loss {l_v.item()} size {boards.size(0)}")
                 pi_accuracy.update(sum_accuracy.item(), target_pis.size(0))
+                print(f"epoch {epoch} step {step} policy accuracy {sum_accuracy.item()} size {target_pis.size(0)}")
                 t.set_postfix(Loss_pi=pi_losses, Loss_v=v_losses)
 
                 # compute gradient and do SGD step

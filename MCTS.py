@@ -86,12 +86,15 @@ class MCTS():
     def write_txt(self, path, epoch_idx=-1, self_play_idx=-1, search_idx=-1, board=None, key="", depth=-1, x=None,
                   y=None,
                   type_str=None):
-        with open(path, 'w') as f:
+        with open(path, 'a') as f:
             n = len(x)
+            f.write(f"{search_idx}th searching\n")
+            f.write(f"\t{depth}th depth\n")
+            content = "\t"
             for i in range(n):
                 x_item, y_item = x[i], y[i]
-                content = f"action_idx {x_item} {type_str} {y_item}\n"
-                f.write(content)
+                content += f"action_idx {x_item} {type_str} {y_item} "
+            f.write(content + '\n')
 
     def write_file(self, epoch_idx=-1, self_play_idx=-1, search_idx=-1, board=None, key="", depth=-1, x=None, y=None,
                    type_str=None, episode_step=-1, train_or_test="training", player="None"):
@@ -103,13 +106,7 @@ class MCTS():
         step_directory = root_directory / f"{episode_step}th_step"
         create_directory(step_directory)
 
-        search_directory = step_directory / f"{search_idx}th_time_search"
-        create_directory(search_directory)
-
-        depth_directory = search_directory / (key + "_depth_" + str(depth))
-        create_directory(depth_directory)
-
-        name = depth_directory / f"distribute_{type_str}"
+        name = step_directory / f"distribute_{type_str}"
 
         self.write_txt(str(name) + '.txt', epoch_idx, self_play_idx, search_idx, board, key, depth, x, y, type_str)
         # image = cv2.imread(str(BACKGROUND))
@@ -126,7 +123,7 @@ class MCTS():
 
         Once a leaf node is found, the neural network is called to return an
         initial policy P and a value v for the state. This value is propagated
-        up the search path. In case the leaf node is a terminal state, the
+        up the sepath. In case the leaf node is a terminal state, the
         outcome is propagated up the search path. The values of Ns, Nsa, Qsa are
         updated.
 
@@ -200,12 +197,13 @@ class MCTS():
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
         next_s = self.game.getCanonicalForm(next_s, next_player)
+        temp = 1e3 if depth >= 666 else 1
         if (s, a) in self.VL:
-            self.VL[(s, a)] += 1
+            self.VL[(s, a)] += temp
         else:
-            self.VL[(s, a)] = 1
+            self.VL[(s, a)] = temp
         v = self.search(next_s, epoch_idx, self_play_idx, search_idx, depth + 1, episode_step, train_or_test, player)
-        self.VL[(s, a)] -= 1
+        self.VL[(s, a)] -= temp
         if (s, a) in self.Qsa:
             self.Qsa[(s, a)] = (self.Nsa[(s, a)] * self.Qsa[(s, a)] + v) / (self.Nsa[(s, a)] + 1)
             self.Nsa[(s, a)] += 1

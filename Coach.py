@@ -102,7 +102,7 @@ class Coach:
                 return [(x[0], x[2], r * ((-1) ** (x[1] != self.curPlayer))) for x in trainExamples]
 
     def _is_write(self):
-        if np.random.uniform(0, 1, 1).item() < 0.01:
+        if np.random.uniform(0, 1, 1).item() < -1:
             return True
         return False
 
@@ -151,12 +151,12 @@ class Coach:
             self.nnet.train(trainExamples, i)
             nmcts = MCTS(self.game, self.nnet, self.args)
 
-            second_player = lambda x, episode_step: np.argmax(
-                nmcts.getActionProb(x, temp=0, epoch_idx=i, episode_step=episode_step, train_or_test='testing',
+            second_player = lambda x, episode_step, episode: np.argmax(
+                nmcts.getActionProb(x, temp=0, epoch_idx=episode, episode_step=episode_step, train_or_test='testing',
                                     player="second_player"))
 
-            first_player = lambda x, episode_step: np.argmax(
-                pmcts.getActionProb(x, temp=0, epoch_idx=i, episode_step=episode_step, train_or_test='testing',
+            first_player = lambda x, episode_step, episode: np.argmax(
+                pmcts.getActionProb(x, temp=0, epoch_idx=episode, episode_step=episode_step, train_or_test='testing',
                                     player="first_player"))
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(first_player,

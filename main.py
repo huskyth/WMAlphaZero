@@ -39,7 +39,6 @@ def judge_best_file():
 
 
 def main():
-    sys.setrecursionlimit(30000)
     judge_best_file()
     log.info('Loading %s...', WMGame.__name__)
     g = WMGame()

@@ -1,3 +1,7 @@
+import time
+from datetime import datetime
+
+
 class AverageMeter(object):
     """From https://github.com/pytorch/examples/blob/master/imagenet/main.py"""
 
@@ -20,3 +24,15 @@ class AverageMeter(object):
 class dotdict(dict):
     def __getattr__(self, name):
         return self[name]
+
+
+def get_readable_time():
+    timestamp = time.time()
+    normal_time = str(datetime.fromtimestamp(timestamp))
+    temp = normal_time.split()
+    first = temp[0].replace('-', '_')
+    second = temp[1].split(':')
+    second[-1] = second[-1].split('.')[0]
+    second = "_".join(second)
+    ret = first + "_" + second
+    return ret

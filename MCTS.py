@@ -4,7 +4,7 @@ import math
 import cv2
 import numpy as np
 
-from utils import dotdict
+from utils import dotdict, get_readable_time
 from watermelon_chess.alpha_zero_game import WMGame
 from watermelon_chess.common import WHITE, BLACK, INDEX_TO_MOVE_DICT, draw_chessmen, BACKGROUND, DISTRIBUTION_PATH, \
     create_directory, bar_show
@@ -84,7 +84,12 @@ class MCTS():
 
     def write_file(self, epoch_idx=-1, self_play_idx=-1, search_idx=-1, board=None, key="", depth=-1, x=None, y=None,
                    type_str=None):
-        epoch_directory = DISTRIBUTION_PATH / (key + "_epoch_" + str(epoch_idx))
+        if epoch_idx == -1 and self_play_idx == -1:
+            key += "_testing_"
+        time_record_directory = DISTRIBUTION_PATH / (key + get_readable_time())
+        create_directory(time_record_directory)
+
+        epoch_directory = time_record_directory / (key + "_epoch_" + str(epoch_idx))
         create_directory(epoch_directory)
 
         self_play_directory = epoch_directory / (key + "_self_play_" + str(self_play_idx))
@@ -175,7 +180,7 @@ class MCTS():
                     cur_best = u
                     best_act = a
         temp_x, temp_u, temp_n = np.array(temp_x), np.array(temp_u), np.array(temp_n)
-        if self.is_write:
+        if epoch_idx == -1 and self_play_idx == -1 or self.is_write:
             self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_u,
                             type_str="UValue")
             self.write_file(epoch_idx, self_play_idx, search_idx, canonicalBoard, "search", depth, temp_x, temp_n,

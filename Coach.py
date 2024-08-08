@@ -167,7 +167,7 @@ class Coach:
             self.nnet.train(trainExamples, i)
             nmcts = MCTS(self.game, self.nnet, self.args)
             second_player = Player(nmcts, "second_player")
-            first_player = Player(nmcts, "first_player")
+            first_player = Player(pmcts, "first_player")
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(first_player,
                           second_player, self.game)

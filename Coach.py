@@ -19,6 +19,22 @@ from watermelon_chess.wm_games_evaluater import RandomPlayer
 log = logging.getLogger(__name__)
 
 
+class Player:
+    def __init__(self, mcts, player_id):
+        self.mcts = mcts
+        self.player_id = player_id
+
+    def __call__(self, *args, **kwargs):
+        x, episode_step, episode = kwargs['x'], kwargs['episode_step'], kwargs['episode']
+        return np.argmax(
+            self.mcts.getActionProb(x, temp=0, epoch_idx=episode, episode_step=episode_step,
+                                    train_or_test='testing',
+                                    player=self.player_id))
+
+    def reset_mcts(self):
+        self.mcts.reset()
+
+
 class Coach:
     """
     This class executes the self-play + learning. It uses the functions defined
@@ -150,14 +166,8 @@ class Coach:
 
             self.nnet.train(trainExamples, i)
             nmcts = MCTS(self.game, self.nnet, self.args)
-
-            second_player = lambda x, episode_step, episode: np.argmax(
-                nmcts.getActionProb(x, temp=0, epoch_idx=episode, episode_step=episode_step, train_or_test='testing',
-                                    player="second_player"))
-
-            first_player = lambda x, episode_step, episode: np.argmax(
-                pmcts.getActionProb(x, temp=0, epoch_idx=episode, episode_step=episode_step, train_or_test='testing',
-                                    player="first_player"))
+            second_player = Player(nmcts, "second_player")
+            first_player = Player(nmcts, "first_player")
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(first_player,
                           second_player, self.game)
@@ -170,7 +180,6 @@ class Coach:
             log.info('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwins, pwins, draws))
             if pwins + nwins == 0 or float(nwins) / (pwins + nwins) < self.args.updateThreshold:
                 log.info('REJECTING NEW MODEL')
-                self.nnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             else:
                 log.info('ACCEPTING NEW MODEL')
                 self.nnet.save_checkpoint(folder=self.args.checkpoint, filename=self.getCheckpointFile(i))

@@ -14,7 +14,7 @@ EPS = 1e-8
 log = logging.getLogger(__name__)
 
 
-class MCTS():
+class MCTS:
     """
     This class handles the MCTS tree.
     """
@@ -33,6 +33,17 @@ class MCTS():
 
         self.VL = {}  # stores game.getValidMoves for board s
         self.is_write = False
+
+    def reset(self):
+        self.Qsa = {}  # stores Q values for s,a (as defined in the paper)
+        self.Nsa = {}  # stores #times edge s,a was visited
+        self.Ns = {}  # stores #times board s was visited
+        self.Ps = {}  # stores initial policy (returned by neural net)
+
+        self.Es = {}  # stores game.getGameEnded ended for board s
+        self.Vs = {}  # stores game.getValidMoves for board s
+
+        self.VL = {}  # stores game.getValidMoves for board s
 
     def getActionProb(self, canonicalBoard, temp=1, epoch_idx=-1, self_play_idx=-1, episode_step=-1,
                       train_or_test="training", player="None"):

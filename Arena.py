@@ -47,6 +47,7 @@ class Arena:
         while self.game.getGameEnded(board, curPlayer) == 0:
             it += 1
             if it >= 400:
+                my_summary.add_float(x=iter, y=it, title="Steps of one episode in Play(Testing stage)")
                 return 0
             if verbose:
                 assert self.display

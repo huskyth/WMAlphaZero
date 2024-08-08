@@ -124,10 +124,10 @@ def checkWinner(game):
             game.chessBoard.blackNum += 1
         elif color == WHITE:
             game.chessBoard.whiteNum += 1
-    if game.chessBoard.blackNum < 3 or game.chessBoard.whiteNum < 3:
+    if game.chessBoard.blackNum != game.chessBoard.whiteNum:
         game.status = 'query'
         game.over = True
-        if game.chessBoard.blackNum < 3:
+        if game.chessBoard.blackNum < game.chessBoard.whiteNum:
             winner = WHITE
         else:
             winner = BLACK
@@ -297,6 +297,10 @@ def playControl(event, game, network, wm_game):
             bakPointStatus = copy.deepcopy(game.pointStatus)
             # move, score = computerMove(bakPointStatus, game.distance, 1)
             move, score = control_by_net_work(network, bakPointStatus, wm_game)
+            if game.pointStatus[move[0]] == 0:
+                print()
+            assert game.pointStatus[move[0]] != 0
+            assert game.pointStatus[move[1]] == 0
             game.pointStatus[move[1]] = game.opponentColor
             game.pointStatus[move[0]] = 0
             game.turn = game.name
@@ -415,3 +419,5 @@ def eventControl(event, game, network, wm_game):
             pass
 
     return game
+
+

@@ -7,7 +7,8 @@ import numpy as np
 from utils import dotdict
 from watermelon_chess.alpha_zero_game import WMGame
 from watermelon_chess.common import WHITE, BLACK, INDEX_TO_MOVE_DICT, draw_chessmen, BACKGROUND, DISTRIBUTION_PATH, \
-    create_directory, bar_show
+    create_directory, bar_show, ROOT_PATH
+from watermelon_chess.models.nn_net import WMNNetWrapper
 
 EPS = 1e-8
 
@@ -230,8 +231,19 @@ class MCTS:
 def control_by_net_work(network, board, wm_game):
     board = np.array(board)
     board = wm_game.getCanonicalForm(board, 1)
-    args = dotdict({'numMCTSSims': 25, 'cpuct': 1.0})
+    args = dotdict({'numMCTSSims': 9600, 'cpuct': 1.0})
     mcts = MCTS(wm_game, network, args)
     a = np.argmax(mcts.getActionProb(board, temp=0))
     a = INDEX_TO_MOVE_DICT[a]
     return a, -1
+
+
+if __name__ == '__main__':
+    temp = [0, 1, 1, 1, 1, -1, -1, 0, 1, 0, 0, 0, 0, 0, 1, 0, -1, -1, -1, -1, 0]
+    image = cv2.imread(str(BACKGROUND))
+    draw_chessmen(temp, image, True, "test")
+    wm_game = WMGame()
+    network = WMNNetWrapper(wm_game)
+    network.load_checkpoint((ROOT_PATH / "temp"), "temp.pth.tar")
+    y = control_by_net_work(network, temp, wm_game)
+    print(y)

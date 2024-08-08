@@ -11,34 +11,37 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import torch
 
+ROOT_PATH = Path(os.path.abspath(__file__)).parent.parent
+
 
 def create_directory(path):
     if not os.path.exists(str(path)):
         os.mkdir(str(path))
 
 
-MENU = 'resources/images/menu.png'
-QUERY_BKG = 'resources/images/queryBkg.png'
-BLACKTILE = 'resources/images/black.png'
-WHITETILE = 'resources/images/white.png'
-HAND = 'resources/images/hand.png'
-START = 'resources/images/start.png'
-CONGRATULATION = 'resources/images/congratulation.png'
-PITY = 'resources/images/pity.png'
-BACK = 'resources/images/back.png'
+WATERMELON_CHESS_PATH = str(ROOT_PATH / "watermelon_chess") + os.sep
+MENU = WATERMELON_CHESS_PATH + 'resources/images/menu.png'
+QUERY_BKG = WATERMELON_CHESS_PATH + 'resources/images/queryBkg.png'
+BLACKTILE = WATERMELON_CHESS_PATH + 'resources/images/black.png'
+WHITETILE = WATERMELON_CHESS_PATH + 'resources/images/white.png'
+HAND = WATERMELON_CHESS_PATH + 'resources/images/hand.png'
+START = WATERMELON_CHESS_PATH + 'resources/images/start.png'
+CONGRATULATION = WATERMELON_CHESS_PATH + 'resources/images/congratulation.png'
+PITY = WATERMELON_CHESS_PATH + 'resources/images/pity.png'
+BACK = WATERMELON_CHESS_PATH + 'resources/images/back.png'
 BACK_RECT = ((460, 400), 117, 50)
-REPLAY = 'resources/images/replay.png'
+REPLAY = WATERMELON_CHESS_PATH + 'resources/images/replay.png'
 REPLAY_RECT = ((460, 300), 117, 50)
-LOCALGAME = 'resources/images/localGame.png'
+LOCALGAME = WATERMELON_CHESS_PATH + 'resources/images/localGame.png'
 LOCALGAME_RECT = ((232, 200), 117, 50)
-NETWORKGAME = 'resources/images/networkGame.png'
+NETWORKGAME = WATERMELON_CHESS_PATH + 'resources/images/networkGame.png'
 NETWORKGAME_RECT = ((232, 300), 117, 50)
-QUIT = 'resources/images/quit.png'
+QUIT = WATERMELON_CHESS_PATH + 'resources/images/quit.png'
 MENU_QUIT_RECT = ((232, 400), 117, 50)
 PLAY_QUIT_RECT = ((460, 400), 117, 50)
-CONFIRM = 'resources/images/confirm.png'
+CONFIRM = WATERMELON_CHESS_PATH + 'resources/images/confirm.png'
 CONFIRM_RECT = ((173, 400), 80, 49)
-CANCEL = 'resources/images/cancel.png'
+CANCEL = WATERMELON_CHESS_PATH + 'resources/images/cancel.png'
 CANCEL_RECT = ((291, 400), 80, 49)
 
 SCREEN_WIDTH = 580
@@ -55,7 +58,6 @@ PLAYER = 2
 
 LENGTH_OF_BOARD = 21
 
-ROOT_PATH = Path(os.path.abspath(__file__)).parent.parent
 DISTANCEPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/distance.txt')
 FONT = str(ROOT_PATH / 'watermelon_chess/resources/font/arial.ttf')
 MAPPATH = str(ROOT_PATH / 'watermelon_chess/resources/data/pointPos.txt')

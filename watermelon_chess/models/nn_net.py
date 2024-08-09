@@ -10,7 +10,7 @@ from NeuralNet import NeuralNet
 import torch
 import torch.optim as optim
 
-from watermelon_chess.models.wm_nnet import WMNNet
+from watermelon_chess.models.wm_resnet import WMNNet
 from watermelon_chess.tensor_board_tool import my_summary
 
 args = dotdict({

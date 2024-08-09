@@ -1,9 +1,28 @@
 """蒙特卡洛树搜索"""
 
-
 import numpy as np
 import copy
-from config import CONFIG
+
+CONFIG = {
+    'kill_action': 30,  # 和棋回合数
+    'dirichlet': 0.2,  # 国际象棋，0.3；日本将棋，0.15；围棋，0.03
+    'play_out': 1200,  # 每次移动的模拟次数
+    'c_puct': 5,  # u的权重
+    'buffer_size': 100000,  # 经验池大小
+    'paddle_model_path': 'current_policy.model',  # paddle模型路径
+    'pytorch_model_path': 'current_policy.pkl',  # pytorch模型路径
+    'train_data_buffer_path': 'train_data_buffer.pkl',  # 数据容器的路径
+    'batch_size': 512,  # 每次更新的train_step数量
+    'kl_targ': 0.02,  # kl散度控制
+    'epochs': 5,  # 每次更新的train_step数量
+    'game_batch_num': 3000,  # 训练更新的次数
+    'use_frame': 'pytorch',  # paddle or pytorch根据自己的环境进行切换
+    'train_update_interval': 600,  # 模型更新间隔时间
+    'use_redis': False,  # 数据存储方式
+    'redis_host': 'localhost',
+    'redis_port': 6379,
+    'redis_db': 0,
+}
 
 
 def softmax(x):
@@ -25,17 +44,17 @@ class TreeNode(object):
         :param prior_p:  当前节点被选择的先验概率
         """
         self._parent = parent
-        self._children = {} # 从动作到TreeNode的映射
+        self._children = {}  # 从动作到TreeNode的映射
         self._n_visits = 0  # 当前当前节点的访问次数
-        self._Q = 0         # 当前节点对应动作的平均动作价值
-        self._u = 0         # 当前节点的置信上限         # PUCT算法
+        self._Q = 0  # 当前节点对应动作的平均动作价值
+        self._u = 0  # 当前节点的置信上限         # PUCT算法
         self._P = prior_p
 
-    def expand(self, action_priors):    # 这里把不合法的动作概率全部设置为0
+    def expand(self, action_priors):  # 这里把不合法的动作概率全部设置为0
         """通过创建新子节点来展开树"""
         for action, prob in action_priors:
             if action not in self._children:
-                self._children[action] =  TreeNode(self, prob)
+                self._children[action] = TreeNode(self, prob)
 
     def select(self, c_puct):
         """
@@ -111,7 +130,7 @@ class MCTS(object):
             node.expand(action_probs)
         else:
             # 对于结束状态，将叶子节点的值换成1或-1
-            if winner == -1:    # Tie
+            if winner == -1:  # Tie
                 leaf_value = 0.0
             else:
                 leaf_value = (
@@ -132,8 +151,8 @@ class MCTS(object):
             self._playout(state_copy)
 
         # 跟据根节点处的访问计数来计算移动概率
-        act_visits= [(act, node._n_visits)
-                     for act, node in self._root._children.items()]
+        act_visits = [(act, node._n_visits)
+                      for act, node in self._root._children.items()]
         acts, visits = zip(*act_visits)
         act_probs = softmax(1.0 / temp * np.log(np.array(visits) + 1e-10))
         return acts, act_probs
@@ -181,7 +200,7 @@ class MCTSPlayer(object):
             # 添加Dirichlet Noise进行探索（自我对弈需要）
             move = np.random.choice(
                 acts,
-                p=0.75*probs + 0.25*np.random.dirichlet(CONFIG['dirichlet'] * np.ones(len(probs)))
+                p=0.75 * probs + 0.25 * np.random.dirichlet(CONFIG['dirichlet'] * np.ones(len(probs)))
             )
             # 更新根节点并重用搜索树
             self.mcts.update_with_move(move)

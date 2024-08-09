@@ -10,29 +10,12 @@ import numpy as np
 from tqdm import tqdm
 
 from Arena import Arena
-from MCTS import MCTS
+from mcts_pure import MCTS, MCTSPlayer
 from watermelon_chess.common import create_directory, draw_chessmen, BACKGROUND, \
     write_msg, PROCEDURE_PATH
 from watermelon_chess.tensor_board_tool import my_summary
-from watermelon_chess.wm_games_evaluater import RandomPlayer
 
 log = logging.getLogger(__name__)
-
-
-class Player:
-    def __init__(self, mcts, player_id):
-        self.mcts = mcts
-        self.player_id = player_id
-
-    def __call__(self, *args, **kwargs):
-        x, episode_step, episode = kwargs['x'], kwargs['episode_step'], kwargs['episode']
-        return np.argmax(
-            self.mcts.getActionProb(x, temp=0, epoch_idx=episode, episode_step=episode_step,
-                                    train_or_test='testing',
-                                    player=self.player_id))
-
-    def reset_mcts(self):
-        self.mcts.reset()
 
 
 class Coach:
@@ -46,7 +29,10 @@ class Coach:
         self.nnet = nnet
         self.pnet = self.nnet.__class__(self.game)  # the competitor network
         self.args = args
-        self.mcts = MCTS(self.game, self.nnet, self.args)
+        self.mcts_player = MCTSPlayer(self.pnet.predict,
+                                      c_puct=self.args.cpuct,
+                                      n_playout=self.args.numMCTSSims,
+                                      is_selfplay=1)
         self.trainExamplesHistory = []  # history of examples from args.numItersForTrainExamplesHistory latest iterations
         self.skipFirstSelfPlay = False  # can be overriden in loadTrainExamples()
 
@@ -100,8 +86,7 @@ class Coach:
 
             temp = int(episodeStep < self.args.tempThreshold)
 
-            pi = self.mcts.getActionProb(canonicalBoard, temp=temp, epoch_idx=epoch_idx, self_play_idx=self_play_idx,
-                                         episode_step=episodeStep)
+            pi = self.mcts_player.get_action(canonicalBoard, )
             sym = self.game.getSymmetries(canonicalBoard, pi)
             for b, p in sym:
                 trainExamples.append([b, self.curPlayer, p, None])
@@ -139,7 +124,7 @@ class Coach:
                 iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
 
                 for idx in tqdm(range(self.args.numEps), desc="Self Play"):
-                    self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
+                    self.mcts_player.reset_player()  # reset search tree
                     iterationTrainExamples += self.executeEpisode(i, idx, self._is_write())
 
                 # save the iteration examples to the history
@@ -162,12 +147,20 @@ class Coach:
             # training new network, keeping a copy of the old one
             self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             self.pnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
-            pmcts = MCTS(self.game, self.pnet, self.args)
+            pmcts = MCTSPlayer(self.pnet.predict,
+                               c_puct=self.args.cpuct,
+                               n_playout=self.args.numMCTSSims,
+                               is_selfplay=0)
 
             self.nnet.train(trainExamples, i)
-            nmcts = MCTS(self.game, self.nnet, self.args)
-            second_player = Player(nmcts, "second_player")
-            first_player = Player(pmcts, "first_player")
+            nmcts = MCTSPlayer(self.nnet.predict,
+                               c_puct=self.args.cpuct,
+                               n_playout=self.args.numMCTSSims,
+                               is_selfplay=0)
+
+            second_player = nmcts.get_action
+            first_player = pmcts.get_action
+
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(first_player,
                           second_player, self.game)

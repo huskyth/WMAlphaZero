@@ -16,3 +16,5 @@ checkpoints/
 
 /training_procedure
 /distribution
+
+*.png

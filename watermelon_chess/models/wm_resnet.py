@@ -14,11 +14,11 @@ class WMNNet(nn.Module):
         self.action_size = game.getActionSize()
         self.args = args
         self.num_channels = 256
-        self.action_size = 21
+        self.action_size = 72
         self.n = 7
         super(WMNNet, self).__init__()
         # residual block
-        res_list = [ResidualBlock(3, self.num_channels)] + [ResidualBlock(self.num_channels, self.num_channels) for _ in
+        res_list = [ResidualBlock(1, self.num_channels)] + [ResidualBlock(self.num_channels, self.num_channels) for _ in
                                                             range(self.num_channels - 1)]
         self.res_layers = nn.Sequential(*res_list)
 
@@ -46,6 +46,7 @@ class WMNNet(nn.Module):
         return board
 
     def forward(self, inputs):
+        inputs = inputs.unsqueeze(1)
         # residual block
         out = self.res_layers(inputs)
 

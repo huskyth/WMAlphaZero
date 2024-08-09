@@ -209,7 +209,7 @@ class MCTS:
         a = best_act
         next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
         next_s = self.game.getCanonicalForm(next_s, next_player)
-        temp = 1e3 if depth >= 666 else 1
+        temp = 1
         if (s, a) in self.VL:
             self.VL[(s, a)] += temp
         else:
